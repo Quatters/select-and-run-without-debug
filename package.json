@@ -1,0 +1,48 @@
+{
+  "name": "select-and-run-without-debug",
+  "displayName": "Select and Run Without Debug",
+  "description": "Select and Run Without Debug from command pallette.",
+  "version": "0.1.0",
+  "repository": {
+    "url": ""
+  },
+  "engines": {
+    "vscode": "^1.72.0"
+  },
+  "categories": [
+    "Keymaps"
+  ],
+  "activationEvents": [
+    "onCommand:select-and-run-without-debug.activate"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "select-and-run-without-debug.activate",
+        "title": "Debug: Select and Run Without Debug"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile && npm run lint",
+    "lint": "eslint src --ext ts",
+    "test": "node ./out/test/runTest.js"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.72.0",
+    "@types/glob": "^8.0.0",
+    "@types/mocha": "^10.0.0",
+    "@types/node": "16.x",
+    "@typescript-eslint/eslint-plugin": "^5.38.1",
+    "@typescript-eslint/parser": "^5.38.1",
+    "eslint": "^8.24.0",
+    "glob": "^8.0.3",
+    "mocha": "^10.0.0",
+    "typescript": "^4.8.4",
+    "@vscode/test-electron": "^2.1.5"
+  }
+}
