@@ -6,7 +6,7 @@
   "publisher": "quatters",
   "license": "SEE LICENSE IN LICENSE",
   "repository": {
-    "url": ""
+    "url": "https://github.com/Quatters/select-and-run-without-debug"
   },
   "engines": {
     "vscode": "^1.72.0"
