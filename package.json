@@ -3,6 +3,8 @@
   "displayName": "Select and Run Without Debug",
   "description": "Select and Run Without Debug from command pallette.",
   "version": "0.1.0",
+  "publisher": "quatters",
+  "license": "SEE LICENSE IN LICENSE",
   "repository": {
     "url": ""
   },
