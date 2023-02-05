@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+## [1.1.1] - 2023-02-05
+- Fix: Multiple execution at once when selecting config.
+- Fix: Moving to top not working if item was previously memoized.
+
 ## [1.1.0] - 2023-02-05
 - Memoize last launched configs and move them to top
 - Refactor code.

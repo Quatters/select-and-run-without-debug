@@ -18,6 +18,9 @@ It's also possible to map a shortcut:
 
 ## Release Notes
 
+### 1.1.1
+- Bug fixes.
+
 ### 1.1.0
 - Memoize last launched configs and move them to top.
 

@@ -58,17 +58,19 @@ export function getDebugParams() {
 }
 
 export function activate(context: vscode.ExtensionContext) {
-    quickPick = vscode.window.createQuickPick();
-    quickPick.placeholder = 'Select configuration to run without debug';
-    quickPick.matchOnDescription = true;
-
     let lastExecutedItems = context.workspaceState.get<vscode.QuickPickItem[]>('lastExecutedItems', []);
 
     let disposable = vscode.commands.registerCommand('select-and-run-without-debug.activate', () => {
+        quickPick = vscode.window.createQuickPick();
+        quickPick.placeholder = 'Select configuration to run without debug';
+        quickPick.matchOnDescription = true;
         quickPick.items = [];
+
         const workspaces = vscode.workspace.workspaceFolders;
 
         quickPick.show();
+
+        quickPick.onDidHide(() => quickPick.dispose());
 
         if (!workspaces) {
             return;
@@ -81,9 +83,9 @@ export function activate(context: vscode.ExtensionContext) {
             vscode.debug.startDebugging(workspace, configName, options);
             vscode.DebugConfigurationProviderTriggerKind
             const selectedItem = quickPick.selectedItems[0];
-            if (!lastExecutedItems.map(item => item.label).includes(selectedItem.label)) {
-                lastExecutedItems.unshift(selectedItem);
-            }
+
+            lastExecutedItems = lastExecutedItems.filter(item => item.label !== selectedItem.label);
+            lastExecutedItems.unshift(selectedItem);
             context.workspaceState.update('lastExecutedItems', lastExecutedItems);
             quickPick.hide();
         });
@@ -92,8 +94,4 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(disposable);
 }
 
-export function deactivate() {
-    if (quickPick) {
-        quickPick.dispose();
-    }
-}
+export function deactivate() { }
