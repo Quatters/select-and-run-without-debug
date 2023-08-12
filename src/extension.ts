@@ -81,7 +81,6 @@ export function activate(context: vscode.ExtensionContext) {
         quickPick.onDidAccept(() => {
             const { workspace, configName, options } = getDebugParams();
             vscode.debug.startDebugging(workspace, configName, options);
-            vscode.DebugConfigurationProviderTriggerKind
             const selectedItem = quickPick.selectedItems[0];
 
             lastExecutedItems = lastExecutedItems.filter(item => item.label !== selectedItem.label);
