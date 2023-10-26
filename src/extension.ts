@@ -2,7 +2,7 @@ import * as vscode from 'vscode';
 
 let quickPick: vscode.QuickPick<vscode.QuickPickItem>;
 
-interface SingleConfig {
+interface LaunchConfig {
     name: string;
     request: 'launch' | 'attach';
     type: string;
@@ -20,8 +20,12 @@ interface WorkspaceLaunchConfig {
     config: vscode.WorkspaceConfiguration;
 }
 
-export function getWorkspaceLaunchConfigs() {
-    return vscode.workspace.workspaceFolders!.map(w => {
+export function getWorkspaceConfigs({
+    workspaces,
+}: {
+    workspaces: readonly vscode.WorkspaceFolder[],
+}) {
+    return workspaces.map(w => {
         const config = vscode.workspace.getConfiguration('launch', w.uri);
         return { workspaceName: w.name, config } as WorkspaceLaunchConfig;
     });
@@ -36,13 +40,13 @@ export function getQuickPickItems({
 }) {
     const isMultiWorkspace = workspaces.length > 1;
 
-    let items = getWorkspaceLaunchConfigs().map(launchConfig => {
-        const singleConfigs: SingleConfig[] = launchConfig.config.get('configurations') || [];
-        const compounds: CompoundConfig[] = launchConfig.config.get('compounds') || [];
-        const items = [...singleConfigs, ...compounds].map((singleConfig) => {
-            const item: vscode.QuickPickItem = { label: singleConfig.name };
+    let items = getWorkspaceConfigs({ workspaces }).map(workspaceConfig => {
+        const launchConfigs: LaunchConfig[] = workspaceConfig.config.get('configurations') || [];
+        const compoundConfigs: CompoundConfig[] = workspaceConfig.config.get('compounds') || [];
+        const items = [...launchConfigs, ...compoundConfigs].map((config) => {
+            const item: vscode.QuickPickItem = { label: config.name };
             if (isMultiWorkspace) {
-                item.description = launchConfig.workspaceName;
+                item.description = workspaceConfig.workspaceName;
             }
             return item;
         });
