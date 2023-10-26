@@ -2,7 +2,7 @@
   "name": "select-and-run-without-debug",
   "displayName": "Select and Run Without Debug",
   "description": "Select and Run Without Debug from command palette.",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "publisher": "quatters",
   "license": "SEE LICENSE IN LICENSE",
   "repository": {
