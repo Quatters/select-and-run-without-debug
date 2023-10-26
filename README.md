@@ -21,6 +21,7 @@ It's also possible to map a shortcut:
 
 ### 1.1.2
 - Add support for compound configs.
+- Update icon.
 
 ### 1.1.1
 - Bug fixes.
