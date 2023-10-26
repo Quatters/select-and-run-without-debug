@@ -15,8 +15,12 @@ It's also possible to map a shortcut:
 ## Features
 
 - Support for workspaces with one or more projects
+- Support for compound configs
 
 ## Release Notes
+
+### 1.1.2
+- Add support for compound configs.
 
 ### 1.1.1
 - Bug fixes.

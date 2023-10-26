@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+## [1.1.2] - 2023-10-26
+- Feature: Support for compound configs.
+
 ## [1.1.1] - 2023-02-05
 - Fix: Multiple execution at once when selecting config.
 - Fix: Moving to top not working if item was previously memoized.
