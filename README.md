@@ -19,6 +19,10 @@ It's also possible to map a shortcut:
 
 ## Release Notes
 
+### 1.1.3
+- Add support for configs placed at ``*.code-workspace``.
+- Update icon.
+
 ### 1.1.2
 - Add support for compound configs.
 - Update icon.

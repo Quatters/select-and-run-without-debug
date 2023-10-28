@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+## [1.1.3] - 2023-10-28
+- Feature: Support for configs placed at ``*.code-workspace``.
+- Update icon.
+- Internals: Move from ``npm`` to ``yarn``.
+- Internals: Setup ``eslint`` and ``prettier``.
+
 ## [1.1.2] - 2023-10-26
 - Feature: Support for compound configs.
 - Update icon.
