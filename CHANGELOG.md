@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+## [1.1.4] - 2023-10-28
+- Fix: If ``*.code-workspace`` configs used without ``launch.json`` files, then
+workspace configs shown multiple times.
+- Fix: If ``*.code-workspace`` configs used with ``launch.json``, then
+workspace configs not shown sometimes.
+
 ## [1.1.3] - 2023-10-28
 - Feature: Support for configs placed at ``*.code-workspace``.
 - Update icon.

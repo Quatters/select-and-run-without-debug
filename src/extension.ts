@@ -7,20 +7,39 @@ interface DebugConfig extends vscode.DebugConfiguration {
     configFile: vscode.WorkspaceFolder;
 }
 
-function getDebugConfigs({ configFiles }: { configFiles: readonly vscode.WorkspaceFolder[] }): DebugConfig[] {
+function populateConfigFile(configs: vscode.DebugConfiguration[], configFile: vscode.WorkspaceFolder): DebugConfig[] {
+    return configs.map((config) => {
+        config.configFile = configFile;
+        return config;
+    }) as DebugConfig[];
+}
+
+function getDebugConfigs({
+    configFile,
+    scope,
+}: {
+    readonly configFile: vscode.WorkspaceFolder;
+    scope: 'workspaceValue' | 'workspaceFolderValue';
+}): DebugConfig[] {
+    const wholeConfiguration = vscode.workspace.getConfiguration(undefined, configFile).inspect('');
+    const workspaceValue = (wholeConfiguration?.[scope] as Record<string, unknown>) || {};
+    const launchSection = (workspaceValue.launch as Record<string, unknown>) || {};
+    return [
+        ...populateConfigFile((launchSection?.configurations as vscode.DebugConfiguration[]) || [], configFile),
+        ...populateConfigFile((launchSection?.compounds as vscode.DebugConfiguration[]) || [], configFile),
+    ];
+}
+
+function getAllDebugConfigs({ configFiles }: { configFiles: readonly vscode.WorkspaceFolder[] }): DebugConfig[] {
     let configs: DebugConfig[] = [];
 
+    if (configFiles[0].index === -1) {
+        configs = configs.concat(getDebugConfigs({ configFile: configFiles[0], scope: 'workspaceValue' }));
+        configFiles = configFiles.slice(1);
+    }
+
     for (const configFile of configFiles) {
-        const launchSection = vscode.workspace.getConfiguration('launch', configFile.uri);
-        const launchConfigs = (launchSection.get<DebugConfig[]>('configurations') || []).map((item) => {
-            item.configFile = configFile;
-            return item;
-        });
-        const compoundConfigs = (launchSection.get<DebugConfig[]>('compounds') || []).map((item) => {
-            item.configFile = configFile;
-            return item;
-        });
-        configs = configs.concat(...launchConfigs, ...compoundConfigs);
+        configs = configs.concat(getDebugConfigs({ configFile, scope: 'workspaceFolderValue' }));
     }
 
     return configs;
@@ -87,7 +106,7 @@ export function activate(context: vscode.ExtensionContext) {
         }
 
         const isMultiWorkspace = configFiles.length > 1;
-        const debugConfigs = getDebugConfigs({ configFiles });
+        const debugConfigs = getAllDebugConfigs({ configFiles });
         quickPick.items = getQuickPickItems({ recentItems, debugConfigs, isMultiWorkspace });
 
         quickPick.onDidAccept(() => {
