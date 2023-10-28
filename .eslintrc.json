@@ -3,22 +3,30 @@
     "parser": "@typescript-eslint/parser",
     "parserOptions": {
         "ecmaVersion": 6,
-        "sourceType": "module"
+        "sourceType": "module",
+        "project": true
     },
     "plugins": [
-        "@typescript-eslint"
+        "@typescript-eslint",
+        "prettier"
     ],
     "rules": {
         "@typescript-eslint/naming-convention": "warn",
-        "@typescript-eslint/semi": "warn",
+        "@typescript-eslint/semi": "error",
         "curly": "warn",
         "eqeqeq": "warn",
         "no-throw-literal": "warn",
-        "semi": "warn"
+        "semi": "warn",
+        "prettier/prettier": ["error"],
+        "no-undef": "warn"
     },
     "ignorePatterns": [
         "out",
         "dist",
         "**/*.d.ts"
+    ],
+    "extends": [
+        "eslint:recommended",
+        "plugin:prettier/recommended"
     ]
 }

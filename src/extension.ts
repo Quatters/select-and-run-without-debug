@@ -2,106 +2,113 @@ import * as vscode from 'vscode';
 
 let quickPick: vscode.QuickPick<vscode.QuickPickItem>;
 
-interface LaunchConfig {
+interface DebugConfig extends vscode.DebugConfiguration {
     name: string;
-    request: 'launch' | 'attach';
-    type: string;
-    [key: string]: any;
+    configFile: vscode.WorkspaceFolder;
 }
 
-interface CompoundConfig {
-    name: string;
-    configurations: string[];
-    [key: string]: any;
-}
+function getDebugConfigs({ configFiles }: { configFiles: readonly vscode.WorkspaceFolder[] }): DebugConfig[] {
+    let configs: DebugConfig[] = [];
 
-interface WorkspaceLaunchConfig {
-    workspaceName: string;
-    config: vscode.WorkspaceConfiguration;
-}
-
-export function getWorkspaceConfigs({
-    workspaces,
-}: {
-    workspaces: readonly vscode.WorkspaceFolder[],
-}) {
-    return workspaces.map(w => {
-        const config = vscode.workspace.getConfiguration('launch', w.uri);
-        return { workspaceName: w.name, config } as WorkspaceLaunchConfig;
-    });
-}
-
-export function getQuickPickItems({
-    workspaces,
-    lastExecutedItems = [],
-}: {
-    lastExecutedItems: vscode.QuickPickItem[],
-    workspaces: readonly vscode.WorkspaceFolder[],
-}) {
-    const isMultiWorkspace = workspaces.length > 1;
-
-    let items = getWorkspaceConfigs({ workspaces }).map(workspaceConfig => {
-        const launchConfigs: LaunchConfig[] = workspaceConfig.config.get('configurations') || [];
-        const compoundConfigs: CompoundConfig[] = workspaceConfig.config.get('compounds') || [];
-        const items = [...launchConfigs, ...compoundConfigs].map((config) => {
-            const item: vscode.QuickPickItem = { label: config.name };
-            if (isMultiWorkspace) {
-                item.description = workspaceConfig.workspaceName;
-            }
+    for (const configFile of configFiles) {
+        const launchSection = vscode.workspace.getConfiguration('launch', configFile.uri);
+        const launchConfigs = (launchSection.get<DebugConfig[]>('configurations') || []).map((item) => {
+            item.configFile = configFile;
             return item;
         });
-        if (isMultiWorkspace) {
-            items.push({ kind: vscode.QuickPickItemKind.Separator, label: '' });
-        }
-        return items;
-    }).flat();
+        const compoundConfigs = (launchSection.get<DebugConfig[]>('compounds') || []).map((item) => {
+            item.configFile = configFile;
+            return item;
+        });
+        configs = configs.concat(...launchConfigs, ...compoundConfigs);
+    }
 
-    lastExecutedItems = lastExecutedItems.filter(i => items.map(j => j.label).includes(i.label));
-    items = items.filter(i => !lastExecutedItems.map(j => j.label).includes(i.label));
-
-    return lastExecutedItems.concat(items);
+    return configs;
 }
 
-export function getDebugParams() {
-    const item = quickPick.selectedItems[0];
-    let workspace = vscode.workspace.workspaceFolders![0];
-    if (item.description) {
-        workspace = vscode.workspace.workspaceFolders!.find(
-            workspace => workspace.name === item.description
-        ) as vscode.WorkspaceFolder;
+function getQuickPickItems({
+    debugConfigs,
+    recentItems = [],
+    isMultiWorkspace = false,
+}: {
+    debugConfigs: DebugConfig[];
+    recentItems: vscode.QuickPickItem[];
+    isMultiWorkspace: boolean;
+}) {
+    const items = debugConfigs.map((config) => {
+        const item: vscode.QuickPickItem = { label: config.name };
+        if (isMultiWorkspace) {
+            item.description = config.configFile.name;
+        }
+        return item;
+    });
+
+    const realRecentItems = recentItems.filter((recentItem) =>
+        items.find((item) => item.label === recentItem.label && item.description === recentItem.description),
+    );
+
+    const restItems = items.filter(
+        (item) =>
+            !recentItems.find(
+                (recentItem) => recentItem.label === item.label && recentItem.description === item.description,
+            ),
+    );
+
+    return realRecentItems.concat(restItems);
+}
+
+function getConfigFiles(): readonly vscode.WorkspaceFolder[] {
+    const workspaces = vscode.workspace.workspaceFolders || [];
+    const workspaceFile = vscode.workspace.workspaceFile;
+    const configFiles: vscode.WorkspaceFolder[] = [...workspaces];
+
+    if (workspaceFile) {
+        configFiles.unshift({ name: 'workspace', uri: workspaceFile, index: -1 });
     }
-    return { workspace, configName: item.label, options: { noDebug: true } };
+
+    return configFiles;
 }
 
 export function activate(context: vscode.ExtensionContext) {
-    let lastExecutedItems = context.workspaceState.get<vscode.QuickPickItem[]>('lastExecutedItems', []);
+    let recentItems = context.workspaceState.get<vscode.QuickPickItem[]>('recentItems', []);
 
     let disposable = vscode.commands.registerCommand('select-and-run-without-debug.activate', () => {
         quickPick = vscode.window.createQuickPick();
         quickPick.placeholder = 'Select configuration to run without debug';
+        quickPick.matchOnDescription = true;
         quickPick.items = [];
 
-        const workspaces = vscode.workspace.workspaceFolders;
-
         quickPick.show();
-
         quickPick.onDidHide(() => quickPick.dispose());
 
-        if (!workspaces) {
+        const configFiles = getConfigFiles();
+        if (configFiles.length <= 0) {
             return;
         }
 
-        quickPick.matchOnDescription = true;
-        quickPick.items = getQuickPickItems({ lastExecutedItems, workspaces });
+        const isMultiWorkspace = configFiles.length > 1;
+        const debugConfigs = getDebugConfigs({ configFiles });
+        quickPick.items = getQuickPickItems({ recentItems, debugConfigs, isMultiWorkspace });
 
         quickPick.onDidAccept(() => {
-            const { workspace, configName, options } = getDebugParams();
-            vscode.debug.startDebugging(workspace, configName, options);
             const selectedItem = quickPick.selectedItems[0];
-
-            lastExecutedItems = lastExecutedItems.filter(item => item.label !== selectedItem.label);
-            lastExecutedItems.unshift(selectedItem);
-            context.workspaceState.update('lastExecutedItems', lastExecutedItems);
+            let selectedDebugConfig: DebugConfig | undefined;
+            if (isMultiWorkspace) {
+                selectedDebugConfig = debugConfigs.find(
+                    (config) =>
+                        config.name === selectedItem.label && config.configFile.name === selectedItem.description,
+                );
+            } else {
+                selectedDebugConfig = debugConfigs.find((config) => config.name === selectedItem.label);
+            }
+            if (!selectedDebugConfig) {
+                vscode.window.showErrorMessage(`Launch configuration not found.`);
+            } else {
+                vscode.debug.startDebugging(selectedDebugConfig.configFile, selectedDebugConfig, { noDebug: true });
+                recentItems = recentItems.filter((item) => item.label !== selectedItem.label);
+                recentItems.unshift(selectedItem);
+                context.workspaceState.update('recentItems', recentItems);
+            }
             quickPick.hide();
         });
     });
@@ -109,4 +116,4 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(disposable);
 }
 
-export function deactivate() { }
+export function deactivate() {}
