@@ -88,10 +88,16 @@ function getConfigFiles(): readonly vscode.WorkspaceFolder[] {
     return configFiles;
 }
 
-export function activate(context: vscode.ExtensionContext) {
-    let recentItems = context.workspaceState.get<vscode.QuickPickItem[]>('recentItems', []);
+function callBuiltinRun() {
+    vscode.commands.executeCommand('workbench.action.debug.run');
+}
 
-    let disposable = vscode.commands.registerCommand('select-and-run-without-debug.activate', () => {
+export function activate(context: vscode.ExtensionContext) {
+    const selectAndRunCommandId = 'select-and-run-without-debug.activate';
+    const reRunCommandId = 'select-and-run-without-debug.rerun';
+    const runCommandId = 'select-and-run-without-debug.run';
+
+    const selectAndRun = vscode.commands.registerCommand(selectAndRunCommandId, () => {
         quickPick = vscode.window.createQuickPick();
         quickPick.placeholder = 'Select configuration to run without debug';
         quickPick.matchOnDescription = true;
@@ -107,6 +113,7 @@ export function activate(context: vscode.ExtensionContext) {
 
         const isMultiWorkspace = configFiles.length > 1;
         const debugConfigs = getAllDebugConfigs({ configFiles });
+        let recentItems = context.workspaceState.get<vscode.QuickPickItem[]>('recentItems', []);
         quickPick.items = getQuickPickItems({ recentItems, debugConfigs, isMultiWorkspace });
 
         quickPick.onDidAccept(() => {
@@ -124,15 +131,33 @@ export function activate(context: vscode.ExtensionContext) {
                 vscode.window.showErrorMessage(`Launch configuration not found.`);
             } else {
                 vscode.debug.startDebugging(selectedDebugConfig.configFile, selectedDebugConfig, { noDebug: true });
-                recentItems = recentItems.filter((item) => item.label !== selectedItem.label);
+                if (isMultiWorkspace) {
+                    recentItems = recentItems.filter(
+                        (item) => item.label !== selectedItem.label && item.description !== selectedItem.description,
+                    );
+                } else {
+                    recentItems = recentItems.filter((item) => item.label !== selectedItem.label);
+                }
                 recentItems.unshift(selectedItem);
                 context.workspaceState.update('recentItems', recentItems);
+                context.workspaceState.update('lastConfig', selectedDebugConfig);
             }
             quickPick.hide();
         });
     });
 
-    context.subscriptions.push(disposable);
+    const reRun = vscode.commands.registerCommand(reRunCommandId, () => {
+        const lastConfig = context.workspaceState.get<DebugConfig>('lastConfig');
+        if (lastConfig) {
+            vscode.debug.startDebugging(lastConfig.configFile, lastConfig, { noDebug: true });
+        } else {
+            callBuiltinRun();
+        }
+    });
+
+    const run = vscode.commands.registerCommand(runCommandId, callBuiltinRun);
+
+    context.subscriptions.push(selectAndRun, reRun, run);
 }
 
 export function deactivate() {}

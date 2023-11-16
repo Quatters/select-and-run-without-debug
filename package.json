@@ -2,14 +2,14 @@
   "name": "select-and-run-without-debug",
   "displayName": "Select and Run Without Debug",
   "description": "Select and Run Without Debug from command palette.",
-  "version": "1.1.4",
+  "version": "1.2.0",
   "publisher": "quatters",
   "license": "SEE LICENSE IN LICENSE",
   "repository": {
     "url": "https://github.com/Quatters/select-and-run-without-debug"
   },
   "engines": {
-    "vscode": "^1.72.0"
+    "vscode": "^1.75.0"
   },
   "categories": [
     "Keymaps",
@@ -19,20 +19,117 @@
     "debug",
     "debugging",
     "command",
-    "palette"
+    "palette",
+    "run",
+    "start"
   ],
   "icon": "images/icon.png",
-  "activationEvents": [
-    "onCommand:select-and-run-without-debug.activate"
-  ],
+  "activationEvents": [],
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
       {
         "command": "select-and-run-without-debug.activate",
-        "title": "Debug: Select and Run Without Debug"
+        "title": "Select and Run Without Debug",
+        "icon": "$(debug-coverage)",
+        "category": "Debug"
+      },
+      {
+        "command": "select-and-run-without-debug.rerun",
+        "title": "Rerun Last Without Debug",
+        "icon": "$(debug-rerun)",
+        "category": "Debug"
+      },
+      {
+        "command": "select-and-run-without-debug.run",
+        "title": "Run Without Debug",
+        "icon": "$(debug-rerun)",
+        "category": "Debug"
       }
-    ]
+    ],
+    "configuration": [
+      {
+        "title": "Select and Run Without Debug",
+        "properties": {
+          "selectAndRunWithoutDebug.runButton": {
+            "type": "boolean",
+            "default": true,
+            "description": "Show run button at the upper right corner.",
+            "order": 0
+          },
+          "selectAndRunWithoutDebug.runButton.preferType": {
+            "type": "string",
+            "enum": [
+              "runCurrent",
+              "select"
+            ],
+            "default": "runCurrent",
+            "enumDescriptions": [
+              "Prefer to run currently selected launch configuration if debug session is not active. Alternatively, show select button (using \"alt\").",
+              "Prefer to select launch configuration if debug session is not active. Alternatively, run currently selected launch configuration (using \"alt\")."
+            ],
+            "description": "Prefer to select run configuration or run current one."
+          },
+          "selectAndRunWithoutDebug.runButton.configProvider": {
+            "type": "string",
+            "enum": [
+              "extension",
+              "builtin"
+            ],
+            "default": "extension",
+            "enumDescriptions": [
+              "Use last launched without debug configuration (the most top one in \"Select and Run Without Debug\" quick pick).\"",
+              "Use currently selected configuration in \"Run and Debug\" tab."
+            ],
+            "description": "Where to get last run configuration. This option exists because it's impossible to update currently selected configuration which you see in \"Run and Debug\" tab."
+          }
+        }
+      }
+    ],
+    "menus": {
+      "commandPalette": [
+        {
+          "command": "select-and-run-without-debug.run",
+          "when": "false"
+        }
+      ],
+      "editor/title": [
+        {
+          "group": "navigation@0",
+          "command": "select-and-run-without-debug.run",
+          "alt": "select-and-run-without-debug.activate",
+          "when": "config.selectAndRunWithoutDebug.runButton && config.selectAndRunWithoutDebug.runButton.preferType == 'runCurrent' && config.selectAndRunWithoutDebug.runButton.configProvider == 'builtin' && debuggersAvailable && !inDebugMode"
+        },
+        {
+          "group": "navigation@0",
+          "command": "select-and-run-without-debug.activate",
+          "when": "config.selectAndRunWithoutDebug.runButton && config.selectAndRunWithoutDebug.runButton.preferType == 'runCurrent' && config.selectAndRunWithoutDebug.runButton.configProvider == 'builtin' && debuggersAvailable && inDebugMode"
+        },
+        {
+          "group": "navigation@0",
+          "command": "select-and-run-without-debug.activate",
+          "alt": "select-and-run-without-debug.run",
+          "when": "config.selectAndRunWithoutDebug.runButton && config.selectAndRunWithoutDebug.runButton.preferType == 'select' && config.selectAndRunWithoutDebug.runButton.configProvider == 'builtin' && debuggersAvailable && !inDebugMode"
+        },
+        {
+          "group": "navigation@0",
+          "command": "select-and-run-without-debug.rerun",
+          "alt": "select-and-run-without-debug.activate",
+          "when": "config.selectAndRunWithoutDebug.runButton && config.selectAndRunWithoutDebug.runButton.preferType == 'runCurrent' && config.selectAndRunWithoutDebug.runButton.configProvider == 'extension' && debuggersAvailable && !inDebugMode"
+        },
+        {
+          "group": "navigation@0",
+          "command": "select-and-run-without-debug.activate",
+          "when": "config.selectAndRunWithoutDebug.runButton && config.selectAndRunWithoutDebug.runButton.preferType == 'runCurrent' && config.selectAndRunWithoutDebug.runButton.configProvider == 'extension' && debuggersAvailable && inDebugMode"
+        },
+        {
+          "group": "navigation@0",
+          "command": "select-and-run-without-debug.activate",
+          "alt": "select-and-run-without-debug.rerun",
+          "when": "config.selectAndRunWithoutDebug.runButton && config.selectAndRunWithoutDebug.runButton.preferType == 'select' && config.selectAndRunWithoutDebug.runButton.configProvider == 'extension' && debuggersAvailable && !inDebugMode"
+        }
+      ]
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
