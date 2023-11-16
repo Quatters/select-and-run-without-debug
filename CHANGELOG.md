@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+## [1.1.5] - 2023-11-16
+- Fix: compounds from ``launch.json`` now start as expected. Compounds from
+``.code-workspace`` still cannot start 😢.
+
 ## [1.1.4] - 2023-10-28
 - Fix: If ``*.code-workspace`` configs used without ``launch.json`` files, then
 workspace configs shown multiple times.

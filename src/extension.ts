@@ -123,7 +123,16 @@ export function activate(context: vscode.ExtensionContext) {
             if (!selectedDebugConfig) {
                 vscode.window.showErrorMessage(`Launch configuration not found.`);
             } else {
-                vscode.debug.startDebugging(selectedDebugConfig.configFile, selectedDebugConfig, { noDebug: true });
+                let nameOrConfiguration: string | vscode.DebugConfiguration = selectedDebugConfig.name;
+                if (selectedDebugConfig.configFile.index === -1) {
+                    // for some reason if config came from code-workspace file, it cannot be launched using name
+                    // (known issue: compounds here still do not start)
+                    // but if it came from launch.json and we passing DebugConfig object, then compounds do not start
+                    nameOrConfiguration = selectedDebugConfig;
+                }
+                vscode.debug.startDebugging(selectedDebugConfig.configFile, nameOrConfiguration, {
+                    noDebug: true,
+                });
                 recentItems = recentItems.filter((item) => item.label !== selectedItem.label);
                 recentItems.unshift(selectedItem);
                 context.workspaceState.update('recentItems', recentItems);

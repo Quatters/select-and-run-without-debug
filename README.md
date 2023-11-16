@@ -19,6 +19,9 @@ It's also possible to map a shortcut:
 
 ## Release Notes
 
+### 1.1.5
+- Fix: compounds from ``launch.json`` cannot start.
+
 ### 1.1.4
 - Fix bugs from previous release.
 
