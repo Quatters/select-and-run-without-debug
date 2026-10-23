@@ -1,7 +1,5 @@
 import * as vscode from 'vscode';
 
-let quickPick: vscode.QuickPick<vscode.QuickPickItem>;
-
 interface DebugConfig extends vscode.DebugConfiguration {
     name: string;
     configFile: vscode.WorkspaceFolder;
@@ -92,7 +90,7 @@ export function activate(context: vscode.ExtensionContext) {
     let recentItems = context.workspaceState.get<vscode.QuickPickItem[]>('recentItems', []);
 
     let disposable = vscode.commands.registerCommand('select-and-run-without-debug.activate', () => {
-        quickPick = vscode.window.createQuickPick();
+        const quickPick = vscode.window.createQuickPick();
         quickPick.placeholder = 'Select configuration to run without debug';
         quickPick.matchOnDescription = true;
         quickPick.items = [];

@@ -1,6 +1,42 @@
 import * as assert from 'assert';
 import * as vscode from 'vscode';
-import { activateExtension, byName, COMMAND, describeItems, LaunchSpy, PickerStub, TestApi } from './helpers';
+import { activateExtension, byName, COMMAND, describeItems, LaunchSpy, PickerStub, sleep, TestApi } from './helpers';
+
+// drives the real quick pick UI, for behavior a stub cannot reproduce
+suite('Single folder, real picker', () => {
+    let api: TestApi;
+    let spy: LaunchSpy;
+
+    suiteSetup(async () => {
+        api = await activateExtension();
+        spy = new LaunchSpy();
+    });
+
+    suiteTeardown(() => spy.dispose());
+
+    setup(async () => {
+        await api.clearRecentItems();
+        spy.clear();
+    });
+
+    teardown(() => vscode.commands.executeCommand('workbench.action.closeQuickOpen'));
+
+    test('runs the active item on accept', async () => {
+        await vscode.commands.executeCommand(COMMAND);
+        await sleep(500);
+        await vscode.commands.executeCommand('workbench.action.acceptSelectedQuickOpenItem');
+        assert.deepStrictEqual(await spy.waitFor(1), [{ name: 'First', folder: 'single', noDebug: true }]);
+    });
+
+    test('keeps the picker open when the command is run again', async () => {
+        await vscode.commands.executeCommand(COMMAND);
+        await sleep(500);
+        await vscode.commands.executeCommand(COMMAND);
+        await sleep(500);
+        await vscode.commands.executeCommand('workbench.action.acceptSelectedQuickOpenItem');
+        assert.deepStrictEqual(await spy.waitFor(1), [{ name: 'First', folder: 'single', noDebug: true }]);
+    });
+});
 
 suite('Single folder', () => {
     let api: TestApi;
