@@ -25,7 +25,7 @@
   "activationEvents": [
     "onCommand:select-and-run-without-debug.activate"
   ],
-  "main": "./out/extension.js",
+  "main": "./dist/extension.js",
   "contributes": {
     "commands": [
       {
@@ -35,14 +35,16 @@
     ]
   },
   "scripts": {
-    "vscode:prepublish": "pnpm run compile",
+    "vscode:prepublish": "pnpm run bundle --minify",
+    "bundle": "esbuild src/extension.ts --bundle --platform=node --format=cjs --target=node20 --external:vscode --outfile=dist/extension.js",
+    "watch": "pnpm run bundle --sourcemap --watch",
     "compile": "tsc -p ./",
-    "watch": "tsc -watch -p ./",
-    "pretest": "pnpm run compile && pnpm run lint",
-    "lint": "oxlint",
+    "pretest": "pnpm run compile && pnpm run bundle --sourcemap && pnpm run lint",
     "test": "vscode-test",
+    "lint": "oxlint",
     "format": "oxfmt",
-    "format:check": "oxfmt --check"
+    "format:check": "oxfmt --check",
+    "package": "vsce package"
   },
   "devDependencies": {
     "@types/mocha": "^10.0.10",
@@ -51,11 +53,23 @@
     "@types/vscode": "~1.90.0",
     "@vscode/test-cli": "^0.0.15",
     "@vscode/test-electron": "^3.1.0",
+    "@vscode/vsce": "^4.0.0",
+    "esbuild": "^0.28.2",
+    "ovsx": "^1.3.0",
     "oxfmt": "^0.74.0",
     "oxlint": "^1.89.0",
     "oxlint-tsgolint": "^7.0.2004",
     "sinon": "^22.1.0",
     "typescript": "^7.0.2"
   },
-  "packageManager": "pnpm@12.15.0"
+  "packageManager": "pnpm@12.15.0",
+  "files": [
+    "dist/extension.js",
+    "images/icon.png",
+    "CHANGELOG.md",
+    "LICENSE"
+  ],
+  "vsce": {
+    "dependencies": false
+  }
 }
