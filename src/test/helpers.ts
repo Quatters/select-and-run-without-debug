@@ -168,7 +168,7 @@ export class PickerStub implements vscode.Disposable {
     /** Picks the item like the user would by pressing Enter on it. */
     async accept(label: string, description?: string): Promise<void> {
         const session = await this.shown();
-        const item = session.items().find((item) => item.label === label && item.description === description);
+        const item = session.items().find((i) => i.label === label && i.description === description);
         assert.ok(item, `no item "${label}" (${description}) in ${JSON.stringify(describeItems(session.items()))}`);
         this.session = undefined;
         session.accept(item);

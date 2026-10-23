@@ -4,5 +4,10 @@
         { "name": "Run", "type": "srwd-test", "request": "launch" },
         { "name": "Alpha Only", "type": "srwd-test", "request": "launch" }
     ],
-    "compounds": [{ "name": "Alpha Compound", "configurations": ["Alpha Only", { "name": "Run", "folder": "alpha" }] }]
+    "compounds": [
+        {
+            "name": "Alpha Compound",
+            "configurations": ["Alpha Only", { "name": "Run", "folder": "alpha" }]
+        }
+    ]
 }

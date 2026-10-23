@@ -1,0 +1,9 @@
+{
+    "$schema": "./node_modules/oxfmt/configuration_schema.json",
+    "tabWidth": 4,
+    "printWidth": 120,
+    "singleQuote": true,
+    "sortPackageJson": false,
+    "ignorePatterns": ["CHANGELOG.md"],
+    "overrides": [{ "files": ["package.json"], "options": { "tabWidth": 2 } }]
+}
