@@ -34,17 +34,17 @@ suite("Multi-root workspace", () => {
 
   teardown(() => picker.dispose());
 
-  test("lists configurations from the workspace file and every folder", async () => {
+  test("lists configurations from every folder, then from the workspace file", async () => {
     await vscode.commands.executeCommand(COMMAND);
     assert.deepStrictEqual(describeItems(await picker.items()), [
-      "WS One (workspace)",
-      "WS Two (workspace)",
-      "WS Compound (workspace)",
       "Run (alpha)",
       "Alpha Only (alpha)",
       "Alpha Compound (alpha)",
       "Run (beta)",
       "Beta Only (beta)",
+      "WS One (workspace)",
+      "WS Two (workspace)",
+      "WS Compound (workspace)",
     ]);
   });
 
@@ -73,12 +73,12 @@ suite("Multi-root workspace", () => {
       "Run (beta)",
       "Run (alpha)",
       "--- other ---",
-      "WS One (workspace)",
-      "WS Two (workspace)",
-      "WS Compound (workspace)",
       "Alpha Only (alpha)",
       "Alpha Compound (alpha)",
       "Beta Only (beta)",
+      "WS One (workspace)",
+      "WS Two (workspace)",
+      "WS Compound (workspace)",
     ]);
   });
 

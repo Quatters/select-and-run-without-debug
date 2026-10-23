@@ -33,10 +33,10 @@ suite("Workspace file inside its folder with launch.json", () => {
   test("lists configurations from both files without duplicates", async () => {
     await vscode.commands.executeCommand(COMMAND);
     assert.deepStrictEqual(describeItems(await picker.items()), [
-      "Odoo (workspace)",
-      "Odoo Autoreload (workspace)",
       "ORun (ws-dot)",
       "OUpdate (ws-dot)",
+      "Odoo (workspace)",
+      "Odoo Autoreload (workspace)",
     ]);
   });
 

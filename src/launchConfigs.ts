@@ -33,14 +33,14 @@ function readLaunchSection(
     .map((raw) => ({ name: raw.name, source, folder, raw }));
 }
 
-/** Configurations from the .code-workspace file, then from each folder, then from user settings. */
+/** Configurations from each folder, then from the .code-workspace file, then from user settings, like the built-in picker. */
 export function getLaunchConfigs(): LaunchConfig[] {
   const configs: LaunchConfig[] = [];
-  if (vscode.workspace.workspaceFile) {
-    configs.push(...readLaunchSection("workspace"));
-  }
   for (const folder of vscode.workspace.workspaceFolders ?? []) {
     configs.push(...readLaunchSection("folder", folder));
+  }
+  if (vscode.workspace.workspaceFile) {
+    configs.push(...readLaunchSection("workspace"));
   }
   configs.push(...readLaunchSection("user"));
   return configs;
