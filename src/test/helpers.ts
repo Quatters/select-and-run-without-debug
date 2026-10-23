@@ -56,13 +56,13 @@ function isSeparator(item: vscode.QuickPickItem): boolean {
 }
 
 /**
- * `label (description)` for each item and `--- label ---` for separators,
+ * `label (description)` for each item, `--- label ---` for separators and `---` for unlabeled ones,
  * to make assertions on picker contents readable.
  */
 export function describeItems(items: readonly vscode.QuickPickItem[]): string[] {
   return items.map((item) => {
     if (isSeparator(item)) {
-      return `--- ${item.label} ---`;
+      return item.label ? `--- ${item.label} ---` : "---";
     }
     return item.description ? `${item.label} (${item.description})` : item.label;
   });

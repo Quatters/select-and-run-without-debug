@@ -11,7 +11,8 @@ Open the Command Palette, run **Debug: Select and Run Without Debug** and choose
 - Multi-root workspaces: each configuration shows the folder it comes from
 - Recently run configurations are listed first
 - **Debug: Run Last Without Debug** runs the most recently run configuration again, without the picker
-- Configurations hidden with `"presentation": { "hidden": true }` are not listed
+- `presentation` works like in the built-in picker: configurations are sorted by `group` and `order`,
+  groups are separated, and ones with `"hidden": true` are not listed
 
 ## Keyboard shortcuts
 

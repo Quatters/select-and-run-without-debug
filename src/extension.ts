@@ -31,14 +31,25 @@ function separator(label: string): vscode.QuickPickItem {
   return { label, kind: vscode.QuickPickItemKind.Separator };
 }
 
+/** Unlabeled separators between presentation groups, like the built-in picker. */
+function withGroupSeparators(
+  items: LaunchConfigItem[],
+): (LaunchConfigItem | vscode.QuickPickItem)[] {
+  return items.flatMap((item, i) =>
+    i > 0 && item.config.presentation?.group !== items[i - 1].config.presentation?.group
+      ? [separator(""), item]
+      : [item],
+  );
+}
+
 function withSeparators(
   recent: LaunchConfigItem[],
   rest: LaunchConfigItem[],
 ): (LaunchConfigItem | vscode.QuickPickItem)[] {
   if (recent.length === 0) {
-    return rest;
+    return withGroupSeparators(rest);
   }
-  const other = rest.length > 0 ? [separator("other"), ...rest] : [];
+  const other = rest.length > 0 ? [separator("other"), ...withGroupSeparators(rest)] : [];
   return [separator("recently used"), ...recent, ...other];
 }
 

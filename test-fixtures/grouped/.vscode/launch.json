@@ -1,0 +1,38 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    { "name": "Plain A", "type": "srwd-test", "request": "launch" },
+    {
+      "name": "Build Late",
+      "type": "srwd-test",
+      "request": "launch",
+      "presentation": { "group": "1_build", "order": 2 }
+    },
+    {
+      "name": "Test",
+      "type": "srwd-test",
+      "request": "launch",
+      "presentation": { "group": "2_test" }
+    },
+    {
+      "name": "Build Early",
+      "type": "srwd-test",
+      "request": "launch",
+      "presentation": { "group": "1_build", "order": 1 }
+    },
+    {
+      "name": "Ordered Without Group",
+      "type": "srwd-test",
+      "request": "launch",
+      "presentation": { "order": 1 }
+    },
+    { "name": "Plain B", "type": "srwd-test", "request": "launch" }
+  ],
+  "compounds": [
+    {
+      "name": "Grouped Compound",
+      "configurations": ["Plain A", "Plain B"],
+      "presentation": { "group": "2_test", "order": 1 }
+    }
+  ]
+}
