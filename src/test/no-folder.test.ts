@@ -1,6 +1,6 @@
 import * as assert from "assert";
 import * as vscode from "vscode";
-import { activateExtension, COMMAND, EXTENSION_ID, PickerStub } from "./helpers";
+import { activateExtension, COMMAND, EXTENSION_ID, MessageStub, PickerStub } from "./helpers";
 
 // must run before anything else activates the extension
 suite("Activation", () => {
@@ -30,8 +30,16 @@ suite("No folder opened", () => {
 
   teardown(() => picker.dispose());
 
-  test("shows an empty list", async () => {
-    await vscode.commands.executeCommand(COMMAND);
-    assert.deepStrictEqual(await picker.items(), []);
+  test("asks to open a folder instead of showing an empty list", async () => {
+    const messages = new MessageStub();
+    try {
+      await vscode.commands.executeCommand(COMMAND);
+      assert.deepStrictEqual(await messages.messages(), [
+        { message: "Open a folder to run its launch configurations.", items: [] },
+      ]);
+      assert.strictEqual(picker.isShown, false);
+    } finally {
+      messages.dispose();
+    }
   });
 });

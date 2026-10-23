@@ -19,7 +19,7 @@ export function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-async function waitUntil(condition: () => boolean, timeout: number): Promise<void> {
+export async function waitUntil(condition: () => boolean, timeout = 5000): Promise<void> {
   const deadline = Date.now() + timeout;
   while (!condition() && Date.now() < deadline) {
     await sleep(20);
@@ -159,6 +159,10 @@ export class PickerStub implements vscode.Disposable {
     return this.session;
   }
 
+  get isShown(): boolean {
+    return this.session !== undefined;
+  }
+
   async items(): Promise<readonly vscode.QuickPickItem[]> {
     return (await this.shown()).items();
   }
@@ -184,6 +188,56 @@ export class PickerStub implements vscode.Disposable {
     const session = await this.shown();
     this.session = undefined;
     session.accept(undefined);
+  }
+
+  dispose(): void {
+    this.sandbox.restore();
+  }
+}
+
+interface ShownMessage {
+  message: string;
+  items: string[];
+}
+
+/** Replaces `window.showInformationMessage` and answers it with `answer`. */
+export class MessageStub implements vscode.Disposable {
+  private readonly sandbox = sinon.createSandbox();
+  private readonly shown: ShownMessage[] = [];
+
+  constructor(answer?: string) {
+    (this.sandbox.stub(vscode.window, "showInformationMessage") as sinon.SinonStub).callsFake(
+      async (message: string, ...items: unknown[]) => {
+        this.shown.push({ message, items: items.filter((item) => typeof item === "string") });
+        return answer;
+      },
+    );
+  }
+
+  async messages(): Promise<ShownMessage[]> {
+    await waitUntil(() => this.shown.length > 0);
+    return [...this.shown];
+  }
+
+  dispose(): void {
+    this.sandbox.restore();
+  }
+}
+
+/** Records calls of the given command instead of running it, other commands run as usual. */
+export class CommandSpy implements vscode.Disposable {
+  private readonly sandbox = sinon.createSandbox();
+  private readonly stub: sinon.SinonStub;
+
+  constructor(private readonly command: string) {
+    this.stub = this.sandbox.stub(vscode.commands, "executeCommand") as sinon.SinonStub;
+    this.stub.callThrough();
+    this.stub.withArgs(command).resolves(undefined);
+  }
+
+  async wasCalled(): Promise<boolean> {
+    await waitUntil(() => this.stub.calledWith(this.command));
+    return this.stub.calledWith(this.command);
   }
 
   dispose(): void {

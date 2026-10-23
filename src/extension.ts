@@ -23,8 +23,27 @@ function run(config: LaunchConfig): Thenable<boolean> {
   return vscode.debug.startDebugging(config.folder, nameOrConfig, { noDebug: true });
 }
 
+async function showNoConfigs(): Promise<void> {
+  if (!vscode.workspace.workspaceFolders?.length) {
+    vscode.window.showInformationMessage("Open a folder to run its launch configurations.");
+    return;
+  }
+  const addConfiguration = "Add Configuration...";
+  const choice = await vscode.window.showInformationMessage(
+    "No launch configurations found.",
+    addConfiguration,
+  );
+  if (choice === addConfiguration) {
+    await vscode.commands.executeCommand("debug.addConfiguration");
+  }
+}
+
 async function selectAndRun(recent: RecentConfigs): Promise<void> {
-  const items = recent.sort(toItems(getLaunchConfigs()));
+  const configs = getLaunchConfigs();
+  if (configs.length === 0) {
+    return showNoConfigs();
+  }
+  const items = recent.sort(toItems(configs));
   const picked = await vscode.window.showQuickPick(items, {
     placeHolder: "Select configuration to run without debug",
     matchOnDescription: true,
