@@ -13,6 +13,7 @@ export interface Presentation {
 /** A configuration or a compound. */
 export interface LaunchConfig {
   name: string;
+  kind: "configuration" | "compound";
   source: LaunchConfigSource;
   /** set only for configurations from a folder's launch.json */
   folder: vscode.WorkspaceFolder | undefined;
@@ -44,14 +45,22 @@ function readLaunchSection(
   folder?: vscode.WorkspaceFolder,
 ): LaunchConfig[] {
   const launch = vscode.workspace.getConfiguration("launch", folder?.uri);
-  const read = (key: "configurations" | "compounds") => {
+  const read = (key: "configurations" | "compounds", kind: LaunchConfig["kind"]) => {
     const value = launch.inspect<vscode.DebugConfiguration[]>(key)?.[scopes[source]];
-    return Array.isArray(value) ? value : [];
+    return (Array.isArray(value) ? value : [])
+      .filter((raw) => typeof raw.name === "string")
+      .map((raw) => ({
+        name: raw.name,
+        kind,
+        source,
+        folder,
+        presentation: readPresentation(raw),
+        raw,
+      }));
   };
-  return [...read("configurations"), ...read("compounds")]
-    .filter((raw) => typeof raw.name === "string")
-    .map((raw) => ({ name: raw.name, source, folder, presentation: readPresentation(raw), raw }))
-    .filter((config) => !config.presentation?.hidden);
+  return [...read("configurations", "configuration"), ...read("compounds", "compound")].filter(
+    (config) => !config.presentation?.hidden,
+  );
 }
 
 function compareOrders(a: number | undefined, b: number | undefined): number {

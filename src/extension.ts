@@ -53,11 +53,18 @@ function withSeparators(
   return [separator("recently used"), ...recent, ...other];
 }
 
-function run(config: LaunchConfig): Thenable<boolean> {
+async function run(config: LaunchConfig): Promise<void> {
   // VS Code looks up names (and so compounds) only in folders' launch.json,
   // configurations from the .code-workspace file and user settings have to be passed as is
+  if (!config.folder && config.kind === "compound") {
+    // passed as is, a compound would be taken for a configuration without a type
+    vscode.window.showErrorMessage(
+      `Compound "${config.name}" cannot be started: VS Code starts only compounds from launch.json.`,
+    );
+    return;
+  }
   const nameOrConfig = config.folder ? config.name : config.raw;
-  return vscode.debug.startDebugging(config.folder, nameOrConfig, { noDebug: true });
+  await vscode.debug.startDebugging(config.folder, nameOrConfig, { noDebug: true });
 }
 
 async function showNoConfigs(): Promise<void> {
