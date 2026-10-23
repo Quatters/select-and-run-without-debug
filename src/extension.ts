@@ -25,7 +25,7 @@ function getDebugConfigs({
     return [
         ...populateConfigFile((launchSection?.configurations as vscode.DebugConfiguration[]) || [], configFile),
         ...populateConfigFile((launchSection?.compounds as vscode.DebugConfiguration[]) || [], configFile),
-    ];
+    ].filter((config) => config.presentation?.hidden !== true);
 }
 
 function getAllDebugConfigs({ configFiles }: { configFiles: readonly vscode.WorkspaceFolder[] }): DebugConfig[] {

@@ -68,6 +68,13 @@ suite('Single folder', () => {
         assert.deepStrictEqual(describeItems(await picker.items()), ['First', 'Second', 'Both']);
     });
 
+    test('hides configurations and compounds marked as hidden', async () => {
+        await vscode.commands.executeCommand(COMMAND);
+        const labels = (await picker.items()).map((item) => item.label);
+        assert.ok(!labels.includes('Hidden'), `${labels}`);
+        assert.ok(!labels.includes('Hidden Compound'), `${labels}`);
+    });
+
     test('runs the selected configuration without debugging', async () => {
         await vscode.commands.executeCommand(COMMAND);
         await picker.accept('Second');
