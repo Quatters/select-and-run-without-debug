@@ -160,7 +160,11 @@ suite("Compounds outside launch.json, real sessions", () => {
 
   async function startTwoSessions(compound: string): Promise<vscode.DebugSession[]> {
     const started: vscode.DebugSession[] = [];
-    const listener = vscode.debug.onDidStartDebugSession((session) => started.push(session));
+    const listener = vscode.debug.onDidStartDebugSession((session) => {
+      if (!session.parentSession) {
+        started.push(session);
+      }
+    });
     try {
       await vscode.commands.executeCommand(COMMAND);
       await picker.accept(compound, "workspace");
@@ -172,13 +176,18 @@ suite("Compounds outside launch.json, real sessions", () => {
     }
   }
 
-  async function stopFirst(sessions: vscode.DebugSession[]): Promise<vscode.DebugSession[]> {
-    const terminated: vscode.DebugSession[] = [];
-    const listener = vscode.debug.onDidTerminateDebugSession((s) => terminated.push(s));
+  // js-debug runs the program in a child session, which stops together with its parent
+  async function stopFirst(sessions: vscode.DebugSession[], timeout = 5000): Promise<string[]> {
+    const terminated: string[] = [];
+    const listener = vscode.debug.onDidTerminateDebugSession((s) => {
+      if (!s.parentSession) {
+        terminated.push(s.name);
+      }
+    });
     try {
       await vscode.debug.stopDebugging(sessions[0]);
-      await waitUntil(() => terminated.length >= 2, 5000);
-      return terminated;
+      await waitUntil(() => terminated.length >= 2, timeout);
+      return terminated.sort();
     } finally {
       listener.dispose();
     }
@@ -186,13 +195,11 @@ suite("Compounds outside launch.json, real sessions", () => {
 
   test("stops every session when one stops with stopAll", async () => {
     const sessions = await startTwoSessions("Stop Together");
-    const terminated = await stopFirst(sessions);
-    assert.strictEqual(terminated.length, 2);
+    assert.deepStrictEqual(await stopFirst(sessions), ["Wait A", "Wait B"]);
   });
 
   test("stops only the one session without stopAll", async () => {
     const sessions = await startTwoSessions("Stop Separately");
-    const terminated = await stopFirst(sessions);
-    assert.deepStrictEqual(terminated, [sessions[0]]);
+    assert.deepStrictEqual(await stopFirst(sessions, 2000), [sessions[0].name]);
   });
 });
