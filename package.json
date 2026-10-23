@@ -9,7 +9,7 @@
     "url": "https://github.com/Quatters/select-and-run-without-debug"
   },
   "engines": {
-    "vscode": "^1.72.0"
+    "vscode": "^1.90.0"
   },
   "categories": [
     "Keymaps",
@@ -48,7 +48,7 @@
     "@types/mocha": "^10.0.10",
     "@types/node": "^20.19.43",
     "@types/sinon": "^22.0.1",
-    "@types/vscode": "^1.72.0",
+    "@types/vscode": "~1.90.0",
     "@vscode/test-cli": "^0.0.15",
     "@vscode/test-electron": "^3.1.0",
     "oxfmt": "^0.74.0",
