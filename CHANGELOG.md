@@ -1,6 +1,4 @@
-# Change Log
-
-## [Unreleased]
+# Changelog
 
 ## [1.1.5] - 2023-11-16
 - Fix: compounds from ``launch.json`` now start as expected. Compounds from
