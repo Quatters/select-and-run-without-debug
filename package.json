@@ -2,7 +2,7 @@
   "name": "select-and-run-without-debug",
   "displayName": "Select and Run Without Debug",
   "description": "Pick a launch configuration and run it without debugging",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "publisher": "quatters",
   "license": "SEE LICENSE IN LICENSE",
   "repository": {
