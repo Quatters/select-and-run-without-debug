@@ -1,0 +1,32 @@
+name: Marketplace identity
+
+# Run manually while setting up publishing. Prints the Azure DevOps profile ID of the
+# managed identity: the Marketplace publisher accepts it as a member only by this ID.
+# Once the identity is a member, the second step confirms it can publish.
+
+on: workflow_dispatch
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    environment: marketplace
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: azure/login@v3
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          allow-no-subscriptions: true
+      - name: Profile ID to add as a publisher member
+        run: >-
+          az rest
+          --url https://app.vssps.visualstudio.com/_apis/profile/profiles/me
+          --resource 499b84ac-1321-427f-aa17-267ca6975798
+          --query id --output tsv
+      - name: Check publish rights
+        run: npx --yes @vscode/vsce@4 verify-pat quatters --azure-credential
