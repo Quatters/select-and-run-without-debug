@@ -1,7 +1,7 @@
 {
   "name": "select-and-run-without-debug",
   "displayName": "Select and Run Without Debug",
-  "description": "Select and Run Without Debug from command palette.",
+  "description": "Pick a launch configuration and run it without debugging",
   "version": "2.0.0",
   "publisher": "quatters",
   "license": "SEE LICENSE IN LICENSE",
@@ -18,6 +18,11 @@
   "keywords": [
     "debug",
     "debugging",
+    "run",
+    "launch",
+    "launch.json",
+    "without debugging",
+    "compound",
     "command",
     "palette"
   ],
