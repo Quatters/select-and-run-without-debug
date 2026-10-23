@@ -1,0 +1,38 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "watch",
+      "dependsOn": ["watch:esbuild", "watch:tsc"],
+      "presentation": { "reveal": "never" },
+      "group": { "kind": "build", "isDefault": true }
+    },
+    {
+      "label": "watch:esbuild",
+      "type": "shell",
+      "command": "pnpm run watch",
+      "isBackground": true,
+      "problemMatcher": {
+        "owner": "esbuild",
+        // never matches: errors reach the Problems panel through watch:tsc,
+        // this matcher only tells VS Code when a build is done
+        "pattern": { "regexp": "^x^" },
+        "background": {
+          // esbuild doesn't print "build started" before the first build
+          "activeOnStart": true,
+          "beginsPattern": "^\\[watch\\] build started",
+          "endsPattern": "^\\[watch\\] build finished"
+        }
+      },
+      "presentation": { "group": "watch", "reveal": "silent" }
+    },
+    {
+      "label": "watch:tsc",
+      "type": "shell",
+      "command": "pnpm exec tsc --noEmit --watch -p ./",
+      "isBackground": true,
+      "problemMatcher": "$tsc-watch",
+      "presentation": { "group": "watch", "reveal": "silent" }
+    }
+  ]
+}
