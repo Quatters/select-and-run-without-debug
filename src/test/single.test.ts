@@ -118,11 +118,43 @@ suite("Single folder", () => {
     await spy.waitFor(1);
 
     await vscode.commands.executeCommand(COMMAND);
-    assert.deepStrictEqual(describeItems(await picker.items()), ["Second", "First", "Both"]);
+    assert.deepStrictEqual(describeItems(await picker.items()), [
+      "--- recently used ---",
+      "Second",
+      "--- other ---",
+      "First",
+      "Both",
+    ]);
     await picker.accept("First");
     await spy.waitFor(2);
 
     await vscode.commands.executeCommand(COMMAND);
-    assert.deepStrictEqual(describeItems(await picker.items()), ["First", "Second", "Both"]);
+    assert.deepStrictEqual(describeItems(await picker.items()), [
+      "--- recently used ---",
+      "First",
+      "Second",
+      "--- other ---",
+      "Both",
+    ]);
+  });
+
+  test("has no other separator when everything was run recently", async () => {
+    // "Both" is a compound of two configurations, so launches add up to 2, 3 and 4
+    for (const [name, launches] of [
+      ["Both", 2],
+      ["Second", 3],
+      ["First", 4],
+    ] as const) {
+      await vscode.commands.executeCommand(COMMAND);
+      await picker.accept(name);
+      await spy.waitFor(launches);
+    }
+    await vscode.commands.executeCommand(COMMAND);
+    assert.deepStrictEqual(describeItems(await picker.items()), [
+      "--- recently used ---",
+      "First",
+      "Second",
+      "Both",
+    ]);
   });
 });

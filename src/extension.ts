@@ -16,6 +16,21 @@ function toItems(configs: LaunchConfig[]): LaunchConfigItem[] {
   }));
 }
 
+function separator(label: string): vscode.QuickPickItem {
+  return { label, kind: vscode.QuickPickItemKind.Separator };
+}
+
+function withSeparators(
+  recent: LaunchConfigItem[],
+  rest: LaunchConfigItem[],
+): (LaunchConfigItem | vscode.QuickPickItem)[] {
+  if (recent.length === 0) {
+    return rest;
+  }
+  const other = rest.length > 0 ? [separator("other"), ...rest] : [];
+  return [separator("recently used"), ...recent, ...other];
+}
+
 function run(config: LaunchConfig): Thenable<boolean> {
   // VS Code looks up names (and so compounds) only in folders' launch.json,
   // configurations from the .code-workspace file have to be passed as is
@@ -43,12 +58,12 @@ async function selectAndRun(recent: RecentConfigs): Promise<void> {
   if (configs.length === 0) {
     return showNoConfigs();
   }
-  const items = recent.sort(toItems(configs));
-  const picked = await vscode.window.showQuickPick(items, {
+  const { recent: recentItems, rest } = recent.split(toItems(configs));
+  const picked = await vscode.window.showQuickPick(withSeparators(recentItems, rest), {
     placeHolder: "Select configuration to run without debug",
     matchOnDescription: true,
   });
-  if (!picked) {
+  if (!picked || !("config" in picked)) {
     return;
   }
   await recent.add(picked);

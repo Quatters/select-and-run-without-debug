@@ -32,11 +32,21 @@ export async function activateExtension(): Promise<TestApi> {
   return extension.activate();
 }
 
-/** `label (description)` for each item, to make assertions on picker contents readable. */
+function isSeparator(item: vscode.QuickPickItem): boolean {
+  return item.kind === vscode.QuickPickItemKind.Separator;
+}
+
+/**
+ * `label (description)` for each item and `--- label ---` for separators,
+ * to make assertions on picker contents readable.
+ */
 export function describeItems(items: readonly vscode.QuickPickItem[]): string[] {
-  return items.map((item) =>
-    item.description ? `${item.label} (${item.description})` : item.label,
-  );
+  return items.map((item) => {
+    if (isSeparator(item)) {
+      return `--- ${item.label} ---`;
+    }
+    return item.description ? `${item.label} (${item.description})` : item.label;
+  });
 }
 
 export function byName(a: Launch, b: Launch): number {
@@ -174,7 +184,9 @@ export class PickerStub implements vscode.Disposable {
   /** Picks the item like the user would by pressing Enter on it. */
   async accept(label: string, description?: string): Promise<void> {
     const session = await this.shown();
-    const item = session.items().find((i) => i.label === label && i.description === description);
+    const item = session
+      .items()
+      .find((i) => !isSeparator(i) && i.label === label && i.description === description);
     assert.ok(
       item,
       `no item "${label}" (${description}) in ${JSON.stringify(describeItems(session.items()))}`,

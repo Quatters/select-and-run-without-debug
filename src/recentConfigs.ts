@@ -20,12 +20,12 @@ export class RecentConfigs {
     return this.state.get<RecentItem[]>(STORAGE_KEY, []);
   }
 
-  /** Recently run items first, most recent at the top, the rest in their original order. */
-  sort<T extends RecentItem>(items: readonly T[]): T[] {
+  /** Splits items into recently run ones, most recent first, and the rest in their original order. */
+  split<T extends RecentItem>(items: readonly T[]): { recent: T[]; rest: T[] } {
     const recent = this.items
       .map((recentItem) => items.find((item) => isSame(item, recentItem)))
       .filter((item) => item !== undefined);
-    return [...recent, ...items.filter((item) => !recent.includes(item))];
+    return { recent, rest: items.filter((item) => !recent.includes(item)) };
   }
 
   async add({ label, description }: RecentItem): Promise<void> {

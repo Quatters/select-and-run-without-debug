@@ -65,8 +65,10 @@ suite("Multi-root workspace", () => {
 
     await vscode.commands.executeCommand(COMMAND);
     assert.deepStrictEqual(describeItems(await picker.items()), [
+      "--- recently used ---",
       "Run (beta)",
       "Run (alpha)",
+      "--- other ---",
       "WS One (workspace)",
       "WS Two (workspace)",
       "WS Compound (workspace)",
