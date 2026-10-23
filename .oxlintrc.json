@@ -10,5 +10,16 @@
     "eqeqeq": "warn",
     "no-throw-literal": "warn"
   },
-  "ignorePatterns": ["out", "dist", "test-fixtures"]
+  "ignorePatterns": ["out", "dist", "test-fixtures"],
+  "options": {
+    "typeAware": true
+  },
+  "overrides": [
+    {
+      "files": ["src/test/**"],
+      "rules": {
+        "typescript/no-unsafe-type-assertion": "off"
+      }
+    }
+  ]
 }

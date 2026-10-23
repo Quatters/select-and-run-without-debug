@@ -84,8 +84,8 @@ suite("Single folder", () => {
   test("hides configurations and compounds marked as hidden", async () => {
     await vscode.commands.executeCommand(COMMAND);
     const labels = (await picker.items()).map((item) => item.label);
-    assert.ok(!labels.includes("Hidden"), `${labels}`);
-    assert.ok(!labels.includes("Hidden Compound"), `${labels}`);
+    assert.ok(!labels.includes("Hidden"), JSON.stringify(labels));
+    assert.ok(!labels.includes("Hidden Compound"), JSON.stringify(labels));
   });
 
   test("runs the selected configuration without debugging", async () => {

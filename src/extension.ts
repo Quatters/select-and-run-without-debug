@@ -60,8 +60,8 @@ function getAllDebugConfigs({
 
 function getQuickPickItems({
   debugConfigs,
-  recentItems = [],
-  isMultiWorkspace = false,
+  recentItems,
+  isMultiWorkspace,
 }: {
   debugConfigs: DebugConfig[];
   recentItems: vscode.QuickPickItem[];
