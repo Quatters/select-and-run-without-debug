@@ -1,0 +1,8 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        { "name": "First", "type": "srwd-test", "request": "launch" },
+        { "name": "Second", "type": "srwd-test", "request": "launch" }
+    ],
+    "compounds": [{ "name": "Both", "configurations": ["First", "Second"] }]
+}

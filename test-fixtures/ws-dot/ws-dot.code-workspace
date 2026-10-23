@@ -1,0 +1,12 @@
+{
+    "folders": [{ "path": "." }],
+    "settings": {
+        "launch": {
+            "version": "0.2.0",
+            "configurations": [
+                { "name": "Odoo", "type": "srwd-test", "request": "launch" },
+                { "name": "Odoo Autoreload", "type": "srwd-test", "request": "launch" }
+            ]
+        }
+    }
+}

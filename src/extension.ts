@@ -142,6 +142,14 @@ export function activate(context: vscode.ExtensionContext) {
     });
 
     context.subscriptions.push(disposable);
+
+    // used by tests
+    return {
+        clearRecentItems: async () => {
+            recentItems = [];
+            await context.workspaceState.update('recentItems', undefined);
+        },
+    };
 }
 
 export function deactivate() {}

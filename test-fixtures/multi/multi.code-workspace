@@ -1,0 +1,13 @@
+{
+    "folders": [{ "path": "alpha" }, { "path": "beta" }],
+    "settings": {
+        "launch": {
+            "version": "0.2.0",
+            "configurations": [
+                { "name": "WS One", "type": "srwd-test", "request": "launch" },
+                { "name": "WS Two", "type": "srwd-test", "request": "launch" }
+            ],
+            "compounds": [{ "name": "WS Compound", "configurations": ["WS One", "WS Two"] }]
+        }
+    }
+}

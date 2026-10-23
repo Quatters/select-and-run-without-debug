@@ -1,0 +1,7 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        { "name": "Run", "type": "srwd-test", "request": "launch" },
+        { "name": "Beta Only", "type": "srwd-test", "request": "launch" }
+    ]
+}
