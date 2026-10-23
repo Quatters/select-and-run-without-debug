@@ -10,17 +10,24 @@ Open the Command Palette, run **Debug: Select and Run Without Debug** and choose
 - Configurations and compounds from `launch.json` and from `.code-workspace` files
 - Multi-root workspaces: each configuration shows the folder it comes from
 - Recently run configurations are listed first
+- **Debug: Run Last Without Debug** runs the most recently run configuration again, without the picker
 - Configurations hidden with `"presentation": { "hidden": true }` are not listed
 
-## Keyboard shortcut
+## Keyboard shortcuts
 
-Open **Preferences: Open Keyboard Shortcuts (JSON)** and add:
+Open **Preferences: Open Keyboard Shortcuts (JSON)** and add, for example:
 
 ```json
-{
-  "key": "ctrl+shift+f5",
-  "command": "select-and-run-without-debug.activate"
-}
+[
+  {
+    "key": "ctrl+alt+f5",
+    "command": "select-and-run-without-debug.activate"
+  },
+  {
+    "key": "ctrl+alt+shift+f5",
+    "command": "select-and-run-without-debug.runLast"
+  }
+]
 ```
 
 ## Known issues

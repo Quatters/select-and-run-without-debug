@@ -35,6 +35,11 @@
         "command": "select-and-run-without-debug.activate",
         "title": "Select and Run Without Debug",
         "category": "Debug"
+      },
+      {
+        "command": "select-and-run-without-debug.runLast",
+        "title": "Run Last Without Debug",
+        "category": "Debug"
       }
     ]
   },

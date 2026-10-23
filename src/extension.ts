@@ -70,6 +70,15 @@ async function selectAndRun(recent: RecentConfigs): Promise<void> {
   await run(picked.config);
 }
 
+async function runLast(recent: RecentConfigs): Promise<void> {
+  const [last] = recent.split(toItems(getLaunchConfigs())).recent;
+  if (!last) {
+    // nothing was run yet, or the last configuration was removed
+    return selectAndRun(recent);
+  }
+  await run(last.config);
+}
+
 function showError(error: unknown): void {
   const message = error instanceof Error ? error.message : String(error);
   vscode.window.showErrorMessage(`Select and Run Without Debug: ${message}`);
@@ -82,6 +91,9 @@ export function activate(context: vscode.ExtensionContext) {
     vscode.commands.registerCommand("select-and-run-without-debug.activate", () => {
       // don't make the caller wait until the user picks something
       selectAndRun(recent).catch(showError);
+    }),
+    vscode.commands.registerCommand("select-and-run-without-debug.runLast", () => {
+      runLast(recent).catch(showError);
     }),
   );
 

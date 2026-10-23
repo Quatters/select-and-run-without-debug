@@ -7,6 +7,7 @@ import {
   describeItems,
   LaunchSpy,
   PickerStub,
+  RUN_LAST_COMMAND,
   sleep,
   TestApi,
 } from "./helpers";
@@ -136,6 +137,24 @@ suite("Single folder", () => {
       "--- other ---",
       "Both",
     ]);
+  });
+
+  test("runs the last configuration again without the picker", async () => {
+    await vscode.commands.executeCommand(COMMAND);
+    await picker.accept("Second");
+    await spy.waitFor(1);
+
+    await vscode.commands.executeCommand(RUN_LAST_COMMAND);
+    assert.deepStrictEqual(await spy.waitFor(2), [
+      { name: "Second", folder: "single", noDebug: true },
+      { name: "Second", folder: "single", noDebug: true },
+    ]);
+    assert.strictEqual(picker.isShown, false);
+  });
+
+  test("shows the picker when nothing was run yet", async () => {
+    await vscode.commands.executeCommand(RUN_LAST_COMMAND);
+    assert.deepStrictEqual(describeItems(await picker.items()), ["First", "Second", "Both"]);
   });
 
   test("has no other separator when everything was run recently", async () => {

@@ -4,6 +4,7 @@ import * as vscode from "vscode";
 
 export const EXTENSION_ID = "quatters.select-and-run-without-debug";
 export const COMMAND = "select-and-run-without-debug.activate";
+export const RUN_LAST_COMMAND = "select-and-run-without-debug.runLast";
 
 export interface TestApi {
   clearRecentItems(): Promise<void>;

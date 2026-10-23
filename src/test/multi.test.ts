@@ -7,6 +7,7 @@ import {
   describeItems,
   LaunchSpy,
   PickerStub,
+  RUN_LAST_COMMAND,
   TestApi,
 } from "./helpers";
 
@@ -75,6 +76,18 @@ suite("Multi-root workspace", () => {
       "Alpha Only (alpha)",
       "Alpha Compound (alpha)",
       "Beta Only (beta)",
+    ]);
+  });
+
+  test("runs the last configuration from the same folder again", async () => {
+    await vscode.commands.executeCommand(COMMAND);
+    await picker.accept("Run", "beta");
+    await spy.waitFor(1);
+
+    await vscode.commands.executeCommand(RUN_LAST_COMMAND);
+    assert.deepStrictEqual(await spy.waitFor(2), [
+      { name: "Run", folder: "beta", noDebug: true },
+      { name: "Run", folder: "beta", noDebug: true },
     ]);
   });
 
