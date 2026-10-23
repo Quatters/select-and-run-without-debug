@@ -47,8 +47,15 @@ file, `user settings` for ones from user settings): `"args": { "name": "Server",
 
 ## Known issues
 
-- Compounds defined in a `.code-workspace` file or in user settings do not start: the VS Code API
-  cannot start them by name, see [microsoft/vscode#109083](https://github.com/microsoft/vscode/issues/109083).
+VS Code can start only compounds from `launch.json` (see
+[microsoft/vscode#109083](https://github.com/microsoft/vscode/issues/109083)), so compounds from a
+`.code-workspace` file or user settings are started by the extension itself. It supports
+`configurations`, `stopAll` and `preLaunchTask`, with these differences from VS Code:
+
+- A background `preLaunchTask` (a watch task with `isBackground`) is not waited for: extensions can't
+  tell when it is ready, so the configurations start right after the task.
+- A `preLaunchTask` counts as failed only by its exit code, problems found by its problem matcher are
+  not taken into account.
 
 ## Requirements
 

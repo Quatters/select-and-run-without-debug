@@ -27,14 +27,19 @@ export async function waitUntil(condition: () => boolean, timeout = 5000): Promi
   }
 }
 
-/** Sets `launch.configurations` in user settings, `undefined` removes it. */
+/** Sets `launch` in user settings, `undefined` removes it. */
 export async function setUserLaunchConfigs(
   configurations: vscode.DebugConfiguration[] | undefined,
+  compounds?: { name: string; configurations: unknown[] }[],
 ): Promise<void> {
   // without a folder, VS Code registers only "launch" as a whole, not "launch.configurations"
   await vscode.workspace
     .getConfiguration()
-    .update("launch", configurations && { configurations }, vscode.ConfigurationTarget.Global);
+    .update(
+      "launch",
+      configurations && { configurations, compounds },
+      vscode.ConfigurationTarget.Global,
+    );
 }
 
 export async function activateExtension(): Promise<TestApi> {

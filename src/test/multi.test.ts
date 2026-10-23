@@ -177,26 +177,7 @@ suite("Multi-root workspace", () => {
     ]);
   });
 
-  test("reports that a compound from the workspace file cannot be started", async () => {
-    const errors = new MessageStub(undefined, "showErrorMessage");
-    try {
-      await vscode.commands.executeCommand(COMMAND);
-      await picker.accept("WS Compound", "workspace");
-      assert.deepStrictEqual(await errors.messages(), [
-        {
-          message:
-            'Compound "WS Compound" cannot be started: VS Code starts only compounds from launch.json.',
-          items: [],
-        },
-      ]);
-      assert.deepStrictEqual(await spy.waitFor(1, 500), []);
-    } finally {
-      errors.dispose();
-    }
-  });
-
-  // known issue: VS Code API cannot start compounds defined outside of folders
-  test.skip("runs a compound from the workspace file", async () => {
+  test("runs a compound from the workspace file", async () => {
     await vscode.commands.executeCommand(COMMAND);
     await picker.accept("WS Compound", "workspace");
     const launches = await spy.waitFor(2);

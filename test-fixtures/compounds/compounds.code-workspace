@@ -1,0 +1,54 @@
+{
+  "folders": [{ "path": "app" }, { "path": "lib" }],
+  "settings": {
+    "launch": {
+      "version": "0.2.0",
+      "configurations": [
+        { "name": "WS One", "type": "srwd-test", "request": "launch" },
+        {
+          "name": "WS Hidden",
+          "type": "srwd-test",
+          "request": "launch",
+          "presentation": { "hidden": true },
+        },
+        { "name": "Shared", "type": "srwd-test", "request": "launch" },
+        // real Node.js sessions for stopAll, started by the built-in JavaScript debugger
+        {
+          "name": "Wait A",
+          "type": "node",
+          "request": "launch",
+          "program": "${workspaceFolder:app}/wait.js",
+        },
+        {
+          "name": "Wait B",
+          "type": "node",
+          "request": "launch",
+          "program": "${workspaceFolder:app}/wait.js",
+        },
+      ],
+      "compounds": [
+        { "name": "Plain", "configurations": ["WS One", "WS Hidden"] },
+        {
+          "name": "Across Folders",
+          "configurations": ["App Only", { "name": "Run", "folder": "lib" }],
+        },
+        { "name": "Prefers Own Source", "configurations": ["Shared"] },
+        { "name": "Ambiguous", "configurations": ["Run"] },
+        { "name": "Missing", "configurations": ["Nope"] },
+        { "name": "Wrong Folder", "configurations": [{ "name": "Run", "folder": "nope" }] },
+        { "name": "With Task", "preLaunchTask": "succeed", "configurations": ["WS One"] },
+        { "name": "With Failing Task", "preLaunchTask": "fail", "configurations": ["WS One"] },
+        { "name": "With Missing Task", "preLaunchTask": "nope", "configurations": ["WS One"] },
+        { "name": "Stop Together", "stopAll": true, "configurations": ["Wait A", "Wait B"] },
+        { "name": "Stop Separately", "configurations": ["Wait A", "Wait B"] },
+      ],
+    },
+  },
+  "tasks": {
+    "version": "2.0.0",
+    "tasks": [
+      { "label": "succeed", "type": "shell", "command": "exit 0" },
+      { "label": "fail", "type": "shell", "command": "exit 3" },
+    ],
+  },
+}

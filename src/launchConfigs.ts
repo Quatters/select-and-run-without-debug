@@ -58,9 +58,7 @@ function readLaunchSection(
         raw,
       }));
   };
-  return [...read("configurations", "configuration"), ...read("compounds", "compound")].filter(
-    (config) => !config.presentation?.hidden,
-  );
+  return [...read("configurations", "configuration"), ...read("compounds", "compound")];
 }
 
 function compareOrders(a: number | undefined, b: number | undefined): number {
@@ -89,9 +87,10 @@ function byPresentation(a: LaunchConfig, b: LaunchConfig): number {
 
 /**
  * Configurations from each folder, then from the .code-workspace file, then from user settings,
- * sorted by presentation like the built-in picker.
+ * sorted by presentation like the built-in picker. Hidden ones are left out unless asked for:
+ * compounds may refer to them.
  */
-export function getLaunchConfigs(): LaunchConfig[] {
+export function getLaunchConfigs({ includeHidden = false } = {}): LaunchConfig[] {
   const configs: LaunchConfig[] = [];
   for (const folder of vscode.workspace.workspaceFolders ?? []) {
     configs.push(...readLaunchSection("folder", folder));
@@ -100,5 +99,7 @@ export function getLaunchConfigs(): LaunchConfig[] {
     configs.push(...readLaunchSection("workspace"));
   }
   configs.push(...readLaunchSection("user"));
-  return configs.sort(byPresentation);
+  return configs
+    .filter((config) => includeHidden || !config.presentation?.hidden)
+    .sort(byPresentation);
 }

@@ -6,6 +6,7 @@ const workspaces = {
   multi: "test-fixtures/multi/multi.code-workspace",
   "ws-dot": "test-fixtures/ws-dot/ws-dot.code-workspace",
   "ws-only": "test-fixtures/ws-only/ws-only.code-workspace",
+  compounds: "test-fixtures/compounds/compounds.code-workspace",
   grouped: "test-fixtures/grouped",
   empty: "test-fixtures/empty",
   "no-folder": undefined,

@@ -1,4 +1,5 @@
 import * as vscode from "vscode";
+import { CompoundError, runCompound } from "./compounds";
 import { getLaunchConfigs, LaunchConfig } from "./launchConfigs";
 import { RecentConfigs } from "./recentConfigs";
 
@@ -58,9 +59,14 @@ async function run(config: LaunchConfig): Promise<void> {
   // configurations from the .code-workspace file and user settings have to be passed as is
   if (!config.folder && config.kind === "compound") {
     // passed as is, a compound would be taken for a configuration without a type
-    vscode.window.showErrorMessage(
-      `Compound "${config.name}" cannot be started: VS Code starts only compounds from launch.json.`,
-    );
+    try {
+      await runCompound(config, getLaunchConfigs({ includeHidden: true }));
+    } catch (error) {
+      if (!(error instanceof CompoundError)) {
+        throw error;
+      }
+      vscode.window.showErrorMessage(error.message);
+    }
     return;
   }
   const nameOrConfig = config.folder ? config.name : config.raw;
