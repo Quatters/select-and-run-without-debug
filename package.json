@@ -43,7 +43,8 @@
     "lint": "oxlint",
     "format": "oxfmt",
     "format:check": "oxfmt --check",
-    "package": "vsce package"
+    "package": "vsce package",
+    "test:docker": "${CONTAINER_ENGINE:-docker} build -f docker/test.Dockerfile -t select-and-run-without-debug-test . && ${CONTAINER_ENGINE:-docker} run --rm --init -v select-and-run-without-debug-vscode:/app/.vscode-test select-and-run-without-debug-test"
   },
   "devDependencies": {
     "@types/mocha": "^10.0.10",
