@@ -6,13 +6,13 @@
   "publisher": "quatters",
   "license": "SEE LICENSE IN LICENSE",
   "repository": {
+    "type": "git",
     "url": "https://github.com/Quatters/select-and-run-without-debug"
   },
   "engines": {
     "vscode": "^1.90.0"
   },
   "categories": [
-    "Keymaps",
     "Other"
   ],
   "keywords": [
@@ -22,15 +22,14 @@
     "palette"
   ],
   "icon": "images/icon.png",
-  "activationEvents": [
-    "onCommand:select-and-run-without-debug.activate"
-  ],
+  "activationEvents": [],
   "main": "./dist/extension.js",
   "contributes": {
     "commands": [
       {
         "command": "select-and-run-without-debug.activate",
-        "title": "Debug: Select and Run Without Debug"
+        "title": "Select and Run Without Debug",
+        "category": "Debug"
       }
     ]
   },
