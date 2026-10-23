@@ -9,7 +9,9 @@ import {
   MessageStub,
   PickerStub,
   RUN_LAST_COMMAND,
+  setUserLaunchConfigs,
   TestApi,
+  USER_CONFIG,
 } from "./helpers";
 
 suite("Multi-root workspace", () => {
@@ -118,6 +120,42 @@ suite("Multi-root workspace", () => {
       assert.deepStrictEqual(await spy.waitFor(1, 500), []);
     } finally {
       errors.dispose();
+    }
+  });
+
+  test("lists configurations from user settings last", async () => {
+    await setUserLaunchConfigs([USER_CONFIG]);
+    try {
+      await vscode.commands.executeCommand(COMMAND);
+      const items = describeItems(await picker.items());
+      assert.strictEqual(items.at(-1), "User One (user settings)", JSON.stringify(items));
+    } finally {
+      await setUserLaunchConfigs(undefined);
+    }
+  });
+
+  test("runs a configuration from user settings", async () => {
+    await setUserLaunchConfigs([USER_CONFIG]);
+    try {
+      await vscode.commands.executeCommand(COMMAND);
+      await picker.accept("User One", "user settings");
+      assert.deepStrictEqual(await spy.waitFor(1), [
+        { name: "User One", folder: undefined, noDebug: true },
+      ]);
+    } finally {
+      await setUserLaunchConfigs(undefined);
+    }
+  });
+
+  test("runs a configuration from user settings given in the command arguments", async () => {
+    await setUserLaunchConfigs([USER_CONFIG]);
+    try {
+      await vscode.commands.executeCommand(COMMAND, { name: "User One", folder: "user settings" });
+      assert.deepStrictEqual(await spy.waitFor(1), [
+        { name: "User One", folder: undefined, noDebug: true },
+      ]);
+    } finally {
+      await setUserLaunchConfigs(undefined);
     }
   });
 

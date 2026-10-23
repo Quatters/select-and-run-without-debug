@@ -7,7 +7,7 @@ Open the Command Palette, run **Debug: Select and Run Without Debug** and choose
 
 ## Features
 
-- Configurations and compounds from `launch.json` and from `.code-workspace` files
+- Configurations and compounds from `launch.json`, `.code-workspace` files and user settings
 - Multi-root workspaces: each configuration shows the folder it comes from
 - Recently run configurations are listed first
 - **Debug: Run Last Without Debug** runs the most recently run configuration again, without the picker
@@ -42,12 +42,12 @@ To run a specific configuration without the picker, pass its name in `args`:
 
 If several folders of a multi-root workspace have a configuration with that name, add the folder
 as the picker shows it next to the name (`workspace` for configurations from the `.code-workspace`
-file): `"args": { "name": "Server", "folder": "backend" }`.
+file, `user settings` for ones from user settings): `"args": { "name": "Server", "folder": "backend" }`.
 
 ## Known issues
 
-- Compounds defined in a `.code-workspace` file do not start: the VS Code API cannot start them by
-  name, see [microsoft/vscode#109083](https://github.com/microsoft/vscode/issues/109083).
+- Compounds defined in a `.code-workspace` file or in user settings do not start: the VS Code API
+  cannot start them by name, see [microsoft/vscode#109083](https://github.com/microsoft/vscode/issues/109083).
 
 ## Requirements
 

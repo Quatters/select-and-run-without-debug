@@ -27,11 +27,29 @@ export async function waitUntil(condition: () => boolean, timeout = 5000): Promi
   }
 }
 
+/** Sets `launch.configurations` in user settings, `undefined` removes it. */
+export async function setUserLaunchConfigs(
+  configurations: vscode.DebugConfiguration[] | undefined,
+): Promise<void> {
+  // without a folder, VS Code registers only "launch" as a whole, not "launch.configurations"
+  await vscode.workspace
+    .getConfiguration()
+    .update("launch", configurations && { configurations }, vscode.ConfigurationTarget.Global);
+}
+
 export async function activateExtension(): Promise<TestApi> {
+  // user settings outlive a test run, make sure a failed test didn't leave any behind
+  await setUserLaunchConfigs(undefined);
   const extension = vscode.extensions.getExtension<TestApi>(EXTENSION_ID);
   assert.ok(extension, `${EXTENSION_ID} is not installed`);
   return extension.activate();
 }
+
+export const USER_CONFIG: vscode.DebugConfiguration = {
+  name: "User One",
+  type: "srwd-test",
+  request: "launch",
+};
 
 function isSeparator(item: vscode.QuickPickItem): boolean {
   return item.kind === vscode.QuickPickItemKind.Separator;

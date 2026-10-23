@@ -8,7 +8,13 @@ interface LaunchConfigItem extends vscode.QuickPickItem {
 
 /** What the picker shows next to a configuration, and what command arguments refer to as "folder". */
 function folderLabel(config: LaunchConfig): string {
-  return config.folder?.name ?? "workspace";
+  if (config.source === "workspace") {
+    return "workspace";
+  }
+  if (config.source === "user") {
+    return "user settings";
+  }
+  return config.folder?.name ?? "";
 }
 
 function toItems(configs: LaunchConfig[]): LaunchConfigItem[] {
@@ -38,7 +44,7 @@ function withSeparators(
 
 function run(config: LaunchConfig): Thenable<boolean> {
   // VS Code looks up names (and so compounds) only in folders' launch.json,
-  // configurations from the .code-workspace file have to be passed as is
+  // configurations from the .code-workspace file and user settings have to be passed as is
   const nameOrConfig = config.folder ? config.name : config.raw;
   return vscode.debug.startDebugging(config.folder, nameOrConfig, { noDebug: true });
 }

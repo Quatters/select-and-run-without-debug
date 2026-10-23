@@ -1,6 +1,15 @@
 import * as assert from "assert";
 import * as vscode from "vscode";
-import { activateExtension, COMMAND, EXTENSION_ID, MessageStub, PickerStub } from "./helpers";
+import {
+  activateExtension,
+  COMMAND,
+  describeItems,
+  EXTENSION_ID,
+  MessageStub,
+  PickerStub,
+  setUserLaunchConfigs,
+  USER_CONFIG,
+} from "./helpers";
 
 // must run before anything else activates the extension
 suite("Activation", () => {
@@ -40,6 +49,16 @@ suite("No folder opened", () => {
       assert.strictEqual(picker.isShown, false);
     } finally {
       messages.dispose();
+    }
+  });
+
+  test("lists configurations from user settings", async () => {
+    await setUserLaunchConfigs([USER_CONFIG]);
+    try {
+      await vscode.commands.executeCommand(COMMAND);
+      assert.deepStrictEqual(describeItems(await picker.items()), ["User One"]);
+    } finally {
+      await setUserLaunchConfigs(undefined);
     }
   });
 });
