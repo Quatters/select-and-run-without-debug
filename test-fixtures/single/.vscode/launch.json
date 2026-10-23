@@ -1,21 +1,21 @@
 {
-    "version": "0.2.0",
-    "configurations": [
-        { "name": "First", "type": "srwd-test", "request": "launch" },
-        {
-            "name": "Hidden",
-            "type": "srwd-test",
-            "request": "launch",
-            "presentation": { "hidden": true }
-        },
-        { "name": "Second", "type": "srwd-test", "request": "launch" }
-    ],
-    "compounds": [
-        { "name": "Both", "configurations": ["First", "Second"] },
-        {
-            "name": "Hidden Compound",
-            "configurations": ["First", "Hidden"],
-            "presentation": { "hidden": true }
-        }
-    ]
+  "version": "0.2.0",
+  "configurations": [
+    { "name": "First", "type": "srwd-test", "request": "launch" },
+    {
+      "name": "Hidden",
+      "type": "srwd-test",
+      "request": "launch",
+      "presentation": { "hidden": true }
+    },
+    { "name": "Second", "type": "srwd-test", "request": "launch" }
+  ],
+  "compounds": [
+    { "name": "Both", "configurations": ["First", "Second"] },
+    {
+      "name": "Hidden Compound",
+      "configurations": ["First", "Hidden"],
+      "presentation": { "hidden": true }
+    }
+  ]
 }

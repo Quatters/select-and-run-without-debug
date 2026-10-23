@@ -1,13 +1,13 @@
 {
-    "version": "0.2.0",
-    "configurations": [
-        { "name": "Run", "type": "srwd-test", "request": "launch" },
-        { "name": "Alpha Only", "type": "srwd-test", "request": "launch" }
-    ],
-    "compounds": [
-        {
-            "name": "Alpha Compound",
-            "configurations": ["Alpha Only", { "name": "Run", "folder": "alpha" }]
-        }
-    ]
+  "version": "0.2.0",
+  "configurations": [
+    { "name": "Run", "type": "srwd-test", "request": "launch" },
+    { "name": "Alpha Only", "type": "srwd-test", "request": "launch" }
+  ],
+  "compounds": [
+    {
+      "name": "Alpha Compound",
+      "configurations": ["Alpha Only", { "name": "Run", "folder": "alpha" }]
+    }
+  ]
 }

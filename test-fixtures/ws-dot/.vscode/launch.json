@@ -1,7 +1,7 @@
 {
-    "version": "0.2.0",
-    "configurations": [
-        { "name": "ORun", "type": "srwd-test", "request": "launch" },
-        { "name": "OUpdate", "type": "srwd-test", "request": "launch" }
-    ]
+  "version": "0.2.0",
+  "configurations": [
+    { "name": "ORun", "type": "srwd-test", "request": "launch" },
+    { "name": "OUpdate", "type": "srwd-test", "request": "launch" }
+  ]
 }
