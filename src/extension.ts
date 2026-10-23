@@ -135,7 +135,9 @@ export function activate(context: vscode.ExtensionContext) {
                 vscode.debug.startDebugging(selectedDebugConfig.configFile, nameOrConfiguration, {
                     noDebug: true,
                 });
-                recentItems = recentItems.filter((item) => item.label !== selectedItem.label);
+                recentItems = recentItems.filter(
+                    (item) => item.label !== selectedItem.label || item.description !== selectedItem.description,
+                );
                 recentItems.unshift(selectedItem);
                 context.workspaceState.update('recentItems', recentItems);
             }

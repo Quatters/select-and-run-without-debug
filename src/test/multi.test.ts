@@ -47,6 +47,27 @@ suite('Multi-root workspace', () => {
         assert.deepStrictEqual(await spy.waitFor(1), [{ name: 'Run', folder: 'beta', noDebug: true }]);
     });
 
+    test('remembers same-named configurations from different folders separately', async () => {
+        await vscode.commands.executeCommand(COMMAND);
+        await picker.accept('Run', 'alpha');
+        await spy.waitFor(1);
+        await vscode.commands.executeCommand(COMMAND);
+        await picker.accept('Run', 'beta');
+        await spy.waitFor(2);
+
+        await vscode.commands.executeCommand(COMMAND);
+        assert.deepStrictEqual(describeItems(await picker.items()), [
+            'Run (beta)',
+            'Run (alpha)',
+            'WS One (workspace)',
+            'WS Two (workspace)',
+            'WS Compound (workspace)',
+            'Alpha Only (alpha)',
+            'Alpha Compound (alpha)',
+            'Beta Only (beta)',
+        ]);
+    });
+
     test('runs a configuration from the workspace file', async () => {
         await vscode.commands.executeCommand(COMMAND);
         await picker.accept('WS One', 'workspace');
