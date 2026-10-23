@@ -109,6 +109,10 @@ export function activate(context: vscode.ExtensionContext) {
 
         quickPick.onDidAccept(() => {
             const selectedItem = quickPick.selectedItems[0];
+            if (!selectedItem) {
+                // e.g. Enter pressed while the filter matches nothing
+                return;
+            }
             let selectedDebugConfig: DebugConfig | undefined;
             if (isMultiWorkspace) {
                 selectedDebugConfig = debugConfigs.find(

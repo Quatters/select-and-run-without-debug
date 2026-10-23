@@ -74,6 +74,12 @@ suite('Single folder', () => {
         assert.deepStrictEqual(await spy.waitFor(1), [{ name: 'Second', folder: 'single', noDebug: true }]);
     });
 
+    test('ignores accept when nothing is selected', async () => {
+        await vscode.commands.executeCommand(COMMAND);
+        await picker.acceptNothing();
+        assert.deepStrictEqual(await spy.waitFor(1, 500), []);
+    });
+
     test('runs every configuration of a compound without debugging', async () => {
         await vscode.commands.executeCommand(COMMAND);
         await picker.accept('Both');
