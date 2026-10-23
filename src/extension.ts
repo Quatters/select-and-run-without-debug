@@ -6,12 +6,17 @@ interface LaunchConfigItem extends vscode.QuickPickItem {
   config: LaunchConfig;
 }
 
+/** What the picker shows next to a configuration, and what command arguments refer to as "folder". */
+function folderLabel(config: LaunchConfig): string {
+  return config.folder?.name ?? "workspace";
+}
+
 function toItems(configs: LaunchConfig[]): LaunchConfigItem[] {
   const folderCount =
     (vscode.workspace.workspaceFolders?.length ?? 0) + (vscode.workspace.workspaceFile ? 1 : 0);
   return configs.map((config) => ({
     label: config.name,
-    description: folderCount > 1 ? (config.folder?.name ?? "workspace") : undefined,
+    description: folderCount > 1 ? folderLabel(config) : undefined,
     config,
   }));
 }
@@ -70,6 +75,45 @@ async function selectAndRun(recent: RecentConfigs): Promise<void> {
   await run(picked.config);
 }
 
+/** Command arguments, e.g. from a keybinding: "name" or { "name": "...", "folder": "..." }. */
+interface RunArgs {
+  name: string;
+  folder?: string;
+}
+
+function parseArgs(arg: unknown): RunArgs | undefined {
+  if (typeof arg === "string") {
+    return { name: arg };
+  }
+  if (typeof arg === "object" && arg !== null && "name" in arg && typeof arg.name === "string") {
+    const folder = "folder" in arg && typeof arg.folder === "string" ? arg.folder : undefined;
+    return { name: arg.name, folder };
+  }
+  // anything else, e.g. the resource VS Code passes when the command is used in a menu
+  return undefined;
+}
+
+async function runByName(recent: RecentConfigs, { name, folder }: RunArgs): Promise<void> {
+  const matches = toItems(getLaunchConfigs()).filter(
+    ({ config }) =>
+      config.name === name && (folder === undefined || folderLabel(config) === folder),
+  );
+  if (matches.length === 0) {
+    const where = folder === undefined ? "" : ` in "${folder}"`;
+    vscode.window.showErrorMessage(`Launch configuration "${name}"${where} not found.`);
+    return;
+  }
+  if (matches.length > 1) {
+    const folders = matches.map(({ config }) => folderLabel(config)).join(", ");
+    vscode.window.showErrorMessage(
+      `There are several launch configurations named "${name}", add "folder" to the command arguments: ${folders}.`,
+    );
+    return;
+  }
+  await recent.add(matches[0]);
+  await run(matches[0].config);
+}
+
 async function runLast(recent: RecentConfigs): Promise<void> {
   const [last] = recent.split(toItems(getLaunchConfigs())).recent;
   if (!last) {
@@ -88,9 +132,10 @@ export function activate(context: vscode.ExtensionContext) {
   const recent = new RecentConfigs(context.workspaceState);
 
   context.subscriptions.push(
-    vscode.commands.registerCommand("select-and-run-without-debug.activate", () => {
+    vscode.commands.registerCommand("select-and-run-without-debug.activate", (arg: unknown) => {
+      const args = parseArgs(arg);
       // don't make the caller wait until the user picks something
-      selectAndRun(recent).catch(showError);
+      (args ? runByName(recent, args) : selectAndRun(recent)).catch(showError);
     }),
     vscode.commands.registerCommand("select-and-run-without-debug.runLast", () => {
       runLast(recent).catch(showError);

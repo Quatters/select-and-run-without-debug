@@ -213,13 +213,16 @@ interface ShownMessage {
   items: string[];
 }
 
-/** Replaces `window.showInformationMessage` and answers it with `answer`. */
+/** Replaces `window.showInformationMessage` (or another `show*Message`) and answers it with `answer`. */
 export class MessageStub implements vscode.Disposable {
   private readonly sandbox = sinon.createSandbox();
   private readonly shown: ShownMessage[] = [];
 
-  constructor(answer?: string) {
-    (this.sandbox.stub(vscode.window, "showInformationMessage") as sinon.SinonStub).callsFake(
+  constructor(
+    answer?: string,
+    method: "showInformationMessage" | "showErrorMessage" = "showInformationMessage",
+  ) {
+    (this.sandbox.stub(vscode.window, method) as sinon.SinonStub).callsFake(
       async (message: string, ...items: unknown[]) => {
         this.shown.push({ message, items: items.filter((item) => typeof item === "string") });
         return answer;

@@ -6,6 +6,7 @@ import {
   COMMAND,
   describeItems,
   LaunchSpy,
+  MessageStub,
   PickerStub,
   RUN_LAST_COMMAND,
   sleep,
@@ -154,6 +155,56 @@ suite("Single folder", () => {
 
   test("shows the picker when nothing was run yet", async () => {
     await vscode.commands.executeCommand(RUN_LAST_COMMAND);
+    assert.deepStrictEqual(describeItems(await picker.items()), ["First", "Second", "Both"]);
+  });
+
+  test("runs a configuration named in the command arguments", async () => {
+    await vscode.commands.executeCommand(COMMAND, "Second");
+    assert.deepStrictEqual(await spy.waitFor(1), [
+      { name: "Second", folder: "single", noDebug: true },
+    ]);
+    assert.strictEqual(picker.isShown, false);
+  });
+
+  test("accepts the configuration name as an object", async () => {
+    await vscode.commands.executeCommand(COMMAND, { name: "Both" });
+    const launches = await spy.waitFor(2);
+    assert.deepStrictEqual(launches.sort(byName), [
+      { name: "First", folder: "single", noDebug: true },
+      { name: "Second", folder: "single", noDebug: true },
+    ]);
+  });
+
+  test("remembers a configuration run from the command arguments", async () => {
+    await vscode.commands.executeCommand(COMMAND, "Second");
+    await spy.waitFor(1);
+    await vscode.commands.executeCommand(COMMAND);
+    assert.deepStrictEqual(describeItems(await picker.items()), [
+      "--- recently used ---",
+      "Second",
+      "--- other ---",
+      "First",
+      "Both",
+    ]);
+  });
+
+  test("reports a configuration from the command arguments that does not exist", async () => {
+    const errors = new MessageStub(undefined, "showErrorMessage");
+    try {
+      await vscode.commands.executeCommand(COMMAND, "Missing");
+      assert.deepStrictEqual(await errors.messages(), [
+        { message: 'Launch configuration "Missing" not found.', items: [] },
+      ]);
+      assert.deepStrictEqual(await spy.waitFor(1, 500), []);
+      assert.strictEqual(picker.isShown, false);
+    } finally {
+      errors.dispose();
+    }
+  });
+
+  test("shows the picker for arguments that are not a configuration", async () => {
+    // e.g. the resource VS Code passes when the command is used in a menu
+    await vscode.commands.executeCommand(COMMAND, vscode.Uri.file("/tmp"));
     assert.deepStrictEqual(describeItems(await picker.items()), ["First", "Second", "Both"]);
   });
 

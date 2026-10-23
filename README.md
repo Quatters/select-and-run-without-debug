@@ -30,6 +30,20 @@ Open **Preferences: Open Keyboard Shortcuts (JSON)** and add, for example:
 ]
 ```
 
+To run a specific configuration without the picker, pass its name in `args`:
+
+```json
+{
+  "key": "ctrl+alt+1",
+  "command": "select-and-run-without-debug.activate",
+  "args": "Server"
+}
+```
+
+If several folders of a multi-root workspace have a configuration with that name, add the folder
+as the picker shows it next to the name (`workspace` for configurations from the `.code-workspace`
+file): `"args": { "name": "Server", "folder": "backend" }`.
+
 ## Known issues
 
 - Compounds defined in a `.code-workspace` file do not start: the VS Code API cannot start them by

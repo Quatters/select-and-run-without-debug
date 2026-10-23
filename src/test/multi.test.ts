@@ -6,6 +6,7 @@ import {
   COMMAND,
   describeItems,
   LaunchSpy,
+  MessageStub,
   PickerStub,
   RUN_LAST_COMMAND,
   TestApi,
@@ -89,6 +90,35 @@ suite("Multi-root workspace", () => {
       { name: "Run", folder: "beta", noDebug: true },
       { name: "Run", folder: "beta", noDebug: true },
     ]);
+  });
+
+  test("runs a configuration from the folder given in the command arguments", async () => {
+    await vscode.commands.executeCommand(COMMAND, { name: "Run", folder: "beta" });
+    assert.deepStrictEqual(await spy.waitFor(1), [{ name: "Run", folder: "beta", noDebug: true }]);
+  });
+
+  test("runs a configuration from the workspace file given in the command arguments", async () => {
+    await vscode.commands.executeCommand(COMMAND, { name: "WS One", folder: "workspace" });
+    assert.deepStrictEqual(await spy.waitFor(1), [
+      { name: "WS One", folder: undefined, noDebug: true },
+    ]);
+  });
+
+  test("asks for a folder when the name in the command arguments is ambiguous", async () => {
+    const errors = new MessageStub(undefined, "showErrorMessage");
+    try {
+      await vscode.commands.executeCommand(COMMAND, "Run");
+      assert.deepStrictEqual(await errors.messages(), [
+        {
+          message:
+            'There are several launch configurations named "Run", add "folder" to the command arguments: alpha, beta.',
+          items: [],
+        },
+      ]);
+      assert.deepStrictEqual(await spy.waitFor(1, 500), []);
+    } finally {
+      errors.dispose();
+    }
   });
 
   test("runs a configuration from the workspace file", async () => {
