@@ -4,7 +4,7 @@
   "description": "Pick a launch configuration and run it without debugging",
   "version": "2.1.0",
   "publisher": "quatters",
-  "license": "SEE LICENSE IN LICENSE",
+  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/Quatters/select-and-run-without-debug"
