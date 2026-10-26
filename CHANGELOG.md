@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.1.1](https://github.com/Quatters/select-and-run-without-debug/compare/v2.1.0...v2.1.1) (2026-10-26)
+
+
+### Bug Fixes
+
+* list the license as MIT on the Marketplace and Open VSX ([b7cca1a](https://github.com/Quatters/select-and-run-without-debug/commit/b7cca1a256084ffff82866805cc0e48119848b05))
+
 ## [2.1.0](https://github.com/Quatters/select-and-run-without-debug/compare/v2.0.0...v2.1.0) (2026-10-23)
 
 
