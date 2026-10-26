@@ -115,6 +115,9 @@ jobs:
     needs: package
     runs-on: ubuntu-latest
     environment: open-vsx
+    permissions:
+      contents: read
+      id-token: write
     steps:
       - uses: actions/checkout@v7
       - uses: pnpm/action-setup@v6
@@ -126,6 +129,4 @@ jobs:
       - uses: actions/download-artifact@v8
         with:
           name: vsix
-      - run: pnpm exec ovsx publish --packagePath ./*.vsix
-        env:
-          OVSX_PAT: ${{ secrets.OVSX_PAT }}
+      - run: pnpm exec ovsx publish --trusted-publishing --packagePath ./*.vsix

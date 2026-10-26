@@ -15,7 +15,7 @@ Releases are automated with [release-please](https://github.com/googleapis/relea
 Create two environments in the repository settings, both limited to the `master` branch:
 
 - `marketplace` with the secrets `AZURE_CLIENT_ID` and `AZURE_TENANT_ID`;
-- `open-vsx` with the secret `OVSX_PAT`.
+- `open-vsx` without secrets.
 
 ### VS Code Marketplace
 
@@ -47,10 +47,16 @@ December 1, 2026, so CI publishes with a Microsoft Entra ID managed identity thr
 2. In the profile settings, log in with an Eclipse account (create one at
    [eclipse.org](https://accounts.eclipse.org) with the same GitHub username) and sign the
    Open VSX Publisher Agreement.
-3. Generate an access token in the settings and save it as `OVSX_PAT` in the `open-vsx`
-   environment.
-4. Create the namespace once: `pnpm exec ovsx create-namespace quatters -p <token>`.
-
-After the first release, the token can be replaced with
-[trusted publishing](https://github.com/eclipse-openvsx/openvsx/wiki/Trusted-Publishing)
-once the namespace ownership is verified.
+3. Generate an access token in the settings and create the namespace once:
+   `pnpm exec ovsx create-namespace quatters -p <token>`. Publish the first version with the
+   same token (`pnpm exec ovsx publish -p <token>`): a trusted publisher can only be registered
+   for an existing extension.
+4. Under [Settings → Trusted Publishers](https://open-vsx.org/user-settings/trusted-publishers),
+   select the `quatters` namespace and register a GitHub Actions publisher: owner `Quatters`,
+   repository `select-and-run-without-debug`, workflow `ci.yml`, environment `open-vsx`.
+   CI then publishes through
+   [trusted publishing](https://github.com/eclipse-openvsx/openvsx/wiki/Trusted-Publishing)
+   (`ovsx publish --trusted-publishing`), without stored tokens. The registration is not tied
+   to a branch, so the environment pin together with its `master`-only rule is what keeps other
+   refs from publishing.
+5. Delete the access token: CI no longer needs it.
