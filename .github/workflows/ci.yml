@@ -4,6 +4,7 @@ on:
   push:
     branches: [master]
   pull_request:
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -130,3 +131,25 @@ jobs:
         with:
           name: vsix
       - run: pnpm exec ovsx publish --trusted-publishing --packagePath ./*.vsix
+
+  # Run manually to check the Open VSX trusted publisher: republishes the latest release, which
+  # the registry skips as a duplicate once the token exchange has succeeded.
+  verify-open-vsx:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    environment: open-vsx
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .node-version
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: gh release download --pattern "*.vsix"
+        env:
+          GH_TOKEN: ${{ github.token }}
+      - run: pnpm exec ovsx publish --trusted-publishing --skip-duplicate --packagePath ./*.vsix
