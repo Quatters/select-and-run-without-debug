@@ -1,0 +1,36 @@
+version: 2
+
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    # skip freshly published versions, CI publishes to the Marketplace and Open VSX
+    cooldown:
+      default-days: 7
+    groups:
+      dev-dependencies:
+        patterns: ["*"]
+    ignore:
+      # must match engines.vscode, vsce refuses to package otherwise
+      - dependency-name: "@types/vscode"
+      # the bundle targets node20
+      - dependency-name: "@types/node"
+        update-types: ["version-update:semver-major"]
+    # "chore" keeps release-please from cutting a release for these
+    commit-message:
+      prefix: chore
+      include: scope
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 7
+    groups:
+      actions:
+        patterns: ["*"]
+    commit-message:
+      prefix: ci
+      include: scope
