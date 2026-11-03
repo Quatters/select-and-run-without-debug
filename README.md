@@ -1,5 +1,10 @@
 # Select and Run Without Debug
 
+[![CI](https://img.shields.io/github/actions/workflow/status/Quatters/select-and-run-without-debug/ci.yml?branch=master&label=CI)](https://github.com/Quatters/select-and-run-without-debug/actions/workflows/ci.yml)
+[![Open VSX Downloads](https://img.shields.io/open-vsx/dt/quatters/select-and-run-without-debug?label=Open%20VSX%20Downloads)](https://open-vsx.org/extension/quatters/select-and-run-without-debug)
+[![VS Marketplace Installs](https://vsmarketplacebadges.dev/installs-short/quatters.select-and-run-without-debug.svg?label=VS%20Marketplace%20Installs)](https://marketplace.visualstudio.com/items?itemName=quatters.select-and-run-without-debug)
+[![VS Marketplace Rating](https://vsmarketplacebadges.dev/rating-short/quatters.select-and-run-without-debug.svg?label=VS%20Marketplace%20Rating)](https://marketplace.visualstudio.com/items?itemName=quatters.select-and-run-without-debug&ssr=false#review-details)
+
 Pick a launch configuration and run it without debugging, the same way the built-in
 **Debug: Select and Start Debugging** command starts it with debugging.
 
